@@ -9,6 +9,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import { Toaster } from "@/components/ui/sonner"
 import { QueryProvider } from "@/providers/query"
 import { ThemeProvider } from "@/providers/theme"
 
@@ -74,6 +75,7 @@ export default function RootLayout({
                 </SidebarInset>
               </div>
             </SidebarProvider>
+            <Toaster richColors />
           </ThemeProvider>
         </QueryProvider>
       </body>
