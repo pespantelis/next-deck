@@ -26,6 +26,7 @@ import {
 import { cn } from "@/lib/utils"
 import type { Project } from "@/types"
 
+import { useCreateProjectDialog } from "./create-project-dialog"
 import { useProjects } from "./hooks"
 import { ServiceList } from "./service-list"
 
@@ -34,6 +35,7 @@ export function ProjectSidebar() {
   const { isMobile } = useSidebar()
 
   const { data: projects = [] } = useProjects()
+  const openCreateProjectDialog = useCreateProjectDialog()
 
   // Set initial project when projects load
   useEffect(() => {
@@ -89,7 +91,13 @@ export function ProjectSidebar() {
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() =>
+                    openCreateProjectDialog((projectName) => {
+                      setSelectedProject({ name: projectName })
+                    })
+                  }
+                >
                   <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
                     <Server className="size-4" />
                   </div>

@@ -3,6 +3,10 @@
 import { dokku } from "@/lib/dokku"
 import type { Project, Service } from "@/types"
 
+export async function createProject(name: string): Promise<void> {
+  dokku.network.create(name + "-network")
+}
+
 export async function getProjects(): Promise<Project[]> {
   const output = dokku.network.list()
   const networkSuffix = "-network"

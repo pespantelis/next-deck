@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 
+import { DialogProvider } from "@/components/dialog"
 import { ProjectSidebar } from "@/components/sidebar"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Separator } from "@/components/ui/separator"
@@ -47,35 +48,37 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <SidebarProvider
-              style={
-                {
-                  "--sidebar-width": "calc(var(--spacing) * 72)",
-                  "--header-height": "calc(var(--spacing) * 12)",
-                } as React.CSSProperties
-              }
-            >
-              <div className="flex min-h-screen w-full">
-                <ProjectSidebar />
-                <SidebarInset>
-                  <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
-                    <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
-                      <SidebarTrigger className="-ml-1" />
-                      <Separator
-                        orientation="vertical"
-                        className="mx-2 data-[orientation=vertical]:h-4"
-                      />
-                      <h1 className="text-base font-medium">Dashboard</h1>
-                      <div className="ml-auto">
-                        <ThemeToggle />
+            <DialogProvider>
+              <SidebarProvider
+                style={
+                  {
+                    "--sidebar-width": "calc(var(--spacing) * 72)",
+                    "--header-height": "calc(var(--spacing) * 12)",
+                  } as React.CSSProperties
+                }
+              >
+                <div className="flex min-h-screen w-full">
+                  <ProjectSidebar />
+                  <SidebarInset>
+                    <header className="flex h-(--header-height) shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height)">
+                      <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
+                        <SidebarTrigger className="-ml-1" />
+                        <Separator
+                          orientation="vertical"
+                          className="mx-2 data-[orientation=vertical]:h-4"
+                        />
+                        <h1 className="text-base font-medium">Dashboard</h1>
+                        <div className="ml-auto">
+                          <ThemeToggle />
+                        </div>
                       </div>
-                    </div>
-                  </header>
-                  {children}
-                </SidebarInset>
-              </div>
-            </SidebarProvider>
-            <Toaster richColors />
+                    </header>
+                    {children}
+                  </SidebarInset>
+                </div>
+              </SidebarProvider>
+              <Toaster richColors />
+            </DialogProvider>
           </ThemeProvider>
         </QueryProvider>
       </body>
