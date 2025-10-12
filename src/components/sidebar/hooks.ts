@@ -11,7 +11,6 @@ export function useProjects() {
   return useQuery({
     queryKey: buildProjectsKey(),
     queryFn: getProjects,
-    staleTime: 60 * 1000,
   })
 }
 
@@ -19,7 +18,6 @@ export function useServices(projectName: string) {
   return useQuery({
     queryKey: buildServicesKey(projectName),
     queryFn: () => getServices(projectName),
-    staleTime: 60 * 1000,
   })
 }
 
