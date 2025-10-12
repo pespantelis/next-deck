@@ -42,4 +42,13 @@ export const dokku = {
     create: (name: string) => write(`network:create ${name}`),
     list: () => read("network:list"),
   },
+  config: {
+    export: (app: string) => exec(`config:export ${app} --format shell`),
+  },
+  domains: {
+    report: (app: string) => exec(`domains:report ${app} --domains-app-vhosts`),
+  },
+  storage: {
+    list: (app: string) => read(`storage:list ${app}`),
+  },
 }
