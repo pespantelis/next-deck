@@ -36,3 +36,12 @@ export async function getEnvironmentVariables(
 
   return env
 }
+
+export async function deleteEnvironmentVariable(
+  projectName: string,
+  serviceName: string,
+  key: string
+): Promise<void> {
+  const appName = `${projectName}-${serviceName}`
+  dokku.config.unset(appName, key)
+}

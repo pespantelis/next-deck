@@ -19,6 +19,7 @@ import {
 import { ItemTitle } from "@/components/ui/item"
 
 import { useVolumes } from "./hooks"
+import { useUnmountVolumeAlertDialog } from "./unmount-volume-dialog"
 
 interface VolumesPageProps {
   params: Promise<{
@@ -30,6 +31,10 @@ interface VolumesPageProps {
 export default function VolumesPage({ params }: VolumesPageProps) {
   const { projectName, serviceName } = use(params)
   const { data: volumes, isLoading } = useVolumes(projectName, serviceName)
+  const openUnmountDialog = useUnmountVolumeAlertDialog(
+    projectName,
+    serviceName
+  )
 
   const items = Object.entries(volumes || {})
 
@@ -59,7 +64,9 @@ export default function VolumesPage({ params }: VolumesPageProps) {
               </ItemTitle>
             </ListCardItemContent>
             <ListCardItemActions>
-              <ListCardItemAction onClick={() => {}}>
+              <ListCardItemAction
+                onClick={() => openUnmountDialog(hostPath, containerPath)}
+              >
                 <CircleMinusIcon />
               </ListCardItemAction>
             </ListCardItemActions>

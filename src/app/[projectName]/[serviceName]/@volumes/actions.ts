@@ -23,3 +23,12 @@ export async function getVolumes(
 
   return volumes
 }
+
+export async function unmountVolume(
+  projectName: string,
+  serviceName: string,
+  path: string
+): Promise<void> {
+  const appName = `${projectName}-${serviceName}`
+  dokku.storage.unmount(appName, path)
+}

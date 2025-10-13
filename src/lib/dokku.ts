@@ -44,11 +44,17 @@ export const dokku = {
   },
   config: {
     export: (app: string) => exec(`config:export ${app} --format shell`),
+    unset: (app: string, key: string) =>
+      write(`config:unset --no-restart ${app} ${key}`),
   },
   domains: {
     report: (app: string) => exec(`domains:report ${app} --domains-app-vhosts`),
+    remove: (app: string, domain: string) =>
+      write(`domains:remove ${app} ${domain}`),
   },
   storage: {
     list: (app: string) => read(`storage:list ${app}`),
+    unmount: (app: string, path: string) =>
+      write(`storage:unmount ${app} ${path}`),
   },
 }

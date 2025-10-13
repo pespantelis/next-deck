@@ -18,6 +18,7 @@ import {
 } from "@/components/list-card"
 import { ItemTitle } from "@/components/ui/item"
 
+import { useDeleteEnvironmentVariableAlertDialog } from "./delete-environment-variable-dialog"
 import { useEnvironmentVariables } from "./hooks"
 
 interface EnvironmentPageProps {
@@ -30,6 +31,10 @@ interface EnvironmentPageProps {
 export default function EnvironmentPage({ params }: EnvironmentPageProps) {
   const { projectName, serviceName } = use(params)
   const { data: env, isLoading } = useEnvironmentVariables(
+    projectName,
+    serviceName
+  )
+  const openDeleteDialog = useDeleteEnvironmentVariableAlertDialog(
     projectName,
     serviceName
   )
@@ -63,7 +68,7 @@ export default function EnvironmentPage({ params }: EnvironmentPageProps) {
               <ListCardItemAction onClick={() => {}}>
                 <PencilIcon />
               </ListCardItemAction>
-              <ListCardItemAction onClick={() => {}}>
+              <ListCardItemAction onClick={() => openDeleteDialog(key)}>
                 <Trash2Icon />
               </ListCardItemAction>
             </ListCardItemActions>

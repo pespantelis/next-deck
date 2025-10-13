@@ -18,6 +18,7 @@ import {
 } from "@/components/list-card"
 import { ItemTitle } from "@/components/ui/item"
 
+import { useDeleteDomainAlertDialog } from "./delete-domain-dialog"
 import { useDomains } from "./hooks"
 
 interface DomainsPageProps {
@@ -30,6 +31,7 @@ interface DomainsPageProps {
 export default function DomainsPage({ params }: DomainsPageProps) {
   const { projectName, serviceName } = use(params)
   const { data: domains, isLoading } = useDomains(projectName, serviceName)
+  const openDeleteDialog = useDeleteDomainAlertDialog(projectName, serviceName)
 
   const items = domains || []
 
@@ -55,7 +57,7 @@ export default function DomainsPage({ params }: DomainsPageProps) {
               </ItemTitle>
             </ListCardItemContent>
             <ListCardItemActions>
-              <ListCardItemAction onClick={() => {}}>
+              <ListCardItemAction onClick={() => openDeleteDialog(domain)}>
                 <Trash2Icon />
               </ListCardItemAction>
             </ListCardItemActions>
