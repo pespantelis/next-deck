@@ -36,6 +36,7 @@ function write(command: string) {
 
 export const dokku = {
   apps: {
+    create: (name: string) => write(`apps:create ${name}`),
     list: () => read("apps:list"),
   },
   network: {
@@ -53,6 +54,15 @@ export const dokku = {
     report: (app: string) => exec(`domains:report ${app} --domains-app-vhosts`),
     remove: (app: string, domain: string) =>
       write(`domains:remove ${app} ${domain}`),
+  },
+  options: {
+    add: (app: string, network: string) =>
+      write(
+        `docker-options:add ${app} deploy,run "--network ${network} --network-alias ${app}"`
+      ),
+  },
+  proxy: {
+    disable: (app: string) => write(`proxy:disable ${app}`),
   },
   storage: {
     list: (app: string) => read(`storage:list ${app}`),

@@ -7,6 +7,18 @@ export async function createProject(name: string): Promise<void> {
   dokku.network.create(name + "-network")
 }
 
+export async function createService(
+  projectName: string,
+  serviceName: string
+): Promise<void> {
+  const appName = `${projectName}-${serviceName}`
+  const networkName = `${projectName}-network`
+
+  dokku.apps.create(appName)
+  dokku.options.add(appName, networkName)
+  dokku.proxy.disable(appName)
+}
+
 export async function getProjects(): Promise<Project[]> {
   const output = dokku.network.list()
   const networkSuffix = "-network"

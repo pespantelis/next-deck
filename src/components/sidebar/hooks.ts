@@ -1,7 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-import { createProject, getProjects, getServices } from "./actions"
+import {
+  createProject,
+  createService,
+  getProjects,
+  getServices,
+} from "./actions"
 
 const buildProjectsKey = () => ["projects"] as const
 const buildServicesKey = (projectName: string) =>
@@ -30,6 +35,27 @@ export function useCreateProject(onSuccess: (projectName: string) => void) {
       await queryClient.invalidateQueries({ queryKey: buildProjectsKey() })
       onSuccess(name)
       toast.success("Project created successfully.")
+    },
+  })
+}
+
+export function useCreateService(onSuccess: (serviceName: string) => void) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      projectName,
+      serviceName,
+    }: {
+      projectName: string
+      serviceName: string
+    }) => createService(projectName, serviceName),
+    onSuccess: async (_, { projectName, serviceName }) => {
+      await queryClient.invalidateQueries({
+        queryKey: buildServicesKey(projectName),
+      })
+      onSuccess(serviceName)
+      toast.success("Service created successfully.")
     },
   })
 }

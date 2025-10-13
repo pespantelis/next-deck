@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { ChevronsUpDown, Server } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { ChevronsUpDown, PlusIcon, Server } from "lucide-react"
 
 import {
   DropdownMenu,
@@ -15,6 +16,7 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
+  SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
@@ -27,15 +29,18 @@ import { cn } from "@/lib/utils"
 import type { Project } from "@/types"
 
 import { useCreateProjectDialog } from "./create-project-dialog"
+import { useCreateServiceDialog } from "./create-service-dialog"
 import { useProjects } from "./hooks"
 import { ServiceList } from "./service-list"
 
 export function ProjectSidebar() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const { isMobile } = useSidebar()
+  const router = useRouter()
 
   const { data: projects = [] } = useProjects()
   const openCreateProjectDialog = useCreateProjectDialog()
+  const openCreateServiceDialog = useCreateServiceDialog()
 
   // Set initial project when projects load
   useEffect(() => {
@@ -114,6 +119,18 @@ export function ProjectSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Services</SidebarGroupLabel>
+          {selectedProject && (
+            <SidebarGroupAction
+              onClick={() =>
+                openCreateServiceDialog(selectedProject.name, (serviceName) => {
+                  router.push(`/${selectedProject.name}/${serviceName}`)
+                })
+              }
+            >
+              <PlusIcon />
+              <span className="sr-only">Add service</span>
+            </SidebarGroupAction>
+          )}
           <SidebarGroupContent>
             {selectedProject && (
               <ServiceList projectName={selectedProject.name} />
