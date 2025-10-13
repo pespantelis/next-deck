@@ -20,6 +20,7 @@ import { ItemTitle } from "@/components/ui/item"
 
 import { useDeleteEnvironmentVariableAlertDialog } from "./delete-environment-variable-dialog"
 import { useEnvironmentVariables } from "./hooks"
+import { useSaveEnvironmentVariableDialog } from "./save-environment-variable-dialog"
 
 interface EnvironmentPageProps {
   params: Promise<{
@@ -34,6 +35,10 @@ export default function EnvironmentPage({ params }: EnvironmentPageProps) {
     projectName,
     serviceName
   )
+  const openSaveDialog = useSaveEnvironmentVariableDialog(
+    projectName,
+    serviceName
+  )
   const openDeleteDialog = useDeleteEnvironmentVariableAlertDialog(
     projectName,
     serviceName
@@ -45,7 +50,7 @@ export default function EnvironmentPage({ params }: EnvironmentPageProps) {
     <ListCard isLoading={isLoading} itemCount={items.length}>
       <ListCardHeader>
         <ListCardTitle>Environment variables</ListCardTitle>
-        <ListCardHeaderAction onClick={() => {}}>
+        <ListCardHeaderAction onClick={() => openSaveDialog()}>
           <PlusIcon /> Add variable
         </ListCardHeaderAction>
       </ListCardHeader>
@@ -65,7 +70,9 @@ export default function EnvironmentPage({ params }: EnvironmentPageProps) {
               </ItemTitle>
             </ListCardItemContent>
             <ListCardItemActions>
-              <ListCardItemAction onClick={() => {}}>
+              <ListCardItemAction
+                onClick={() => openSaveDialog({ key, value })}
+              >
                 <PencilIcon />
               </ListCardItemAction>
               <ListCardItemAction onClick={() => openDeleteDialog(key)}>

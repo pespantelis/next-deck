@@ -44,6 +44,8 @@ export const dokku = {
   },
   config: {
     export: (app: string) => exec(`config:export ${app} --format shell`),
+    set: (app: string, key: string, value: string) =>
+      write(`config:set --no-restart ${app} ${key}=${value}`),
     unset: (app: string, key: string) =>
       write(`config:unset --no-restart ${app} ${key}`),
   },
