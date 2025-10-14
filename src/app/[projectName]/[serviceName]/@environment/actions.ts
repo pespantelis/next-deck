@@ -7,7 +7,8 @@ export async function getEnvironmentVariables(
   serviceName: string
 ): Promise<Record<string, string>> {
   const appName = `${projectName}-${serviceName}`
-  const lines = dokku.config.export(appName).split(" ").filter(Boolean)
+  const output = await dokku.config.export(appName)
+  const lines = output.split(" ").filter(Boolean)
 
   const env: Record<string, string> = {}
   for (const line of lines) {
@@ -42,9 +43,9 @@ export async function setEnvironmentVariable(
   serviceName: string,
   key: string,
   value: string
-) {
+): Promise<void> {
   const appName = `${projectName}-${serviceName}`
-  dokku.config.set(appName, key, value)
+  return dokku.config.set(appName, key, value)
 }
 
 export async function deleteEnvironmentVariable(
@@ -53,5 +54,5 @@ export async function deleteEnvironmentVariable(
   key: string
 ): Promise<void> {
   const appName = `${projectName}-${serviceName}`
-  dokku.config.unset(appName, key)
+  return dokku.config.unset(appName, key)
 }

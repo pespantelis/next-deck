@@ -1,36 +1,37 @@
-import { execSync } from "child_process"
+import { exec } from "child_process"
 
 import { env } from "@/lib/env"
 
-function exec(command: string) {
-  return execSync(`${env.EXEC_COMMAND} ${command}`, {
-    encoding: "utf-8",
+function execAsync(
+  command: string
+): Promise<{ stdout: string; stderr: string; error: unknown }> {
+  return new Promise((resolve) => {
+    exec(
+      `${env.EXEC_COMMAND} ${command}`,
+      { encoding: "utf-8" },
+      (error, stdout, stderr) => {
+        resolve({ stdout, stderr, error })
+      }
+    )
   })
 }
 
-function read(command: string) {
-  return exec(command).split("\n")
+async function read(command: string) {
+  const { stdout } = await execAsync(command)
+  return stdout.trim()
 }
 
-function write(command: string) {
-  try {
-    exec(command)
-  } catch (error: unknown) {
-    if (error && typeof error === "object" && "stderr" in error) {
-      const stderr = (error.stderr as string)
-        .split("\n")
-        .filter(Boolean)
-        .join("\n")
-        .trim()
+async function write(command: string) {
+  const { stderr, error } = await execAsync(command)
 
-      if (stderr.startsWith("!")) {
-        throw new Error(stderr.slice(1).trim())
-      }
+  if (error) {
+    const errorMessage = stderr.split("\n").filter(Boolean).join("\n").trim()
 
-      throw new Error(stderr)
+    if (errorMessage.startsWith("!")) {
+      throw new Error(errorMessage.slice(1).trim())
     }
 
-    throw error
+    throw new Error(errorMessage || "Command failed")
   }
 }
 
@@ -44,14 +45,14 @@ export const dokku = {
     list: () => read("network:list"),
   },
   config: {
-    export: (app: string) => exec(`config:export ${app} --format shell`),
+    export: (app: string) => read(`config:export ${app} --format shell`),
     set: (app: string, key: string, value: string) =>
       write(`config:set --no-restart ${app} ${key}=${value}`),
     unset: (app: string, key: string) =>
       write(`config:unset --no-restart ${app} ${key}`),
   },
   domains: {
-    report: (app: string) => exec(`domains:report ${app} --domains-app-vhosts`),
+    report: (app: string) => read(`domains:report ${app} --domains-app-vhosts`),
     remove: (app: string, domain: string) =>
       write(`domains:remove ${app} ${domain}`),
   },

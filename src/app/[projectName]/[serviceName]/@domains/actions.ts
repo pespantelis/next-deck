@@ -7,7 +7,9 @@ export async function getDomains(
   serviceName: string
 ): Promise<string[]> {
   const appName = `${projectName}-${serviceName}`
-  return dokku.domains.report(appName).trim().split(" ").filter(Boolean)
+  const output = await dokku.domains.report(appName)
+
+  return output.split(" ").filter(Boolean)
 }
 
 export async function deleteDomain(
@@ -16,5 +18,5 @@ export async function deleteDomain(
   domain: string
 ): Promise<void> {
   const appName = `${projectName}-${serviceName}`
-  dokku.domains.remove(appName, domain)
+  return dokku.domains.remove(appName, domain)
 }

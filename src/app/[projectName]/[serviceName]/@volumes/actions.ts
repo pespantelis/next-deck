@@ -7,7 +7,8 @@ export async function getVolumes(
   serviceName: string
 ): Promise<Record<string, string>> {
   const appName = `${projectName}-${serviceName}`
-  const lines = dokku.storage.list(appName).filter(Boolean)
+  const output = await dokku.storage.list(appName)
+  const lines = output.split("\n").filter(Boolean)
 
   const volumes: Record<string, string> = {}
   for (const line of lines) {
@@ -30,5 +31,5 @@ export async function unmountVolume(
   path: string
 ): Promise<void> {
   const appName = `${projectName}-${serviceName}`
-  dokku.storage.unmount(appName, path)
+  return dokku.storage.unmount(appName, path)
 }
