@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
+import type { Project, Service } from "@/types"
+
 import {
   createProject,
   createService,
@@ -12,17 +14,19 @@ const buildProjectsKey = () => ["projects"] as const
 const buildServicesKey = (projectName: string) =>
   ["services", projectName] as const
 
-export function useProjects() {
+export function useProjects(initialData?: Project[]) {
   return useQuery({
     queryKey: buildProjectsKey(),
     queryFn: getProjects,
+    initialData,
   })
 }
 
-export function useServices(projectName: string) {
+export function useServices(projectName: string, initialData?: Service[]) {
   return useQuery({
     queryKey: buildServicesKey(projectName),
     queryFn: () => getServices(projectName),
+    initialData,
   })
 }
 

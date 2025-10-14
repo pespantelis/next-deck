@@ -1,50 +1,25 @@
-import { createContext, useContext } from "react"
+"use client"
 
 import { Button } from "@/components/ui/button"
 import { Item, ItemActions, ItemContent, ItemGroup } from "@/components/ui/item"
 import { Skeleton } from "@/components/ui/skeleton"
 
-interface ListCardContext {
-  isLoading: boolean
-  itemCount: number
+export function ListCard({ children }: { children: React.ReactNode }) {
+  return <div className="rounded-lg border bg-card p-6">{children}</div>
 }
 
-const ListCardContext = createContext<ListCardContext | undefined>(undefined)
-
-function useListCardContext() {
-  const context = useContext(ListCardContext)
-  if (!context) {
-    throw new Error("ListCard components must be used within ListCard")
-  }
-  return context
-}
-
-interface ListCardProps {
-  isLoading: boolean
-  itemCount: number
-  children: React.ReactNode
-}
-
-export function ListCard({ isLoading, itemCount, children }: ListCardProps) {
+export function ListCardSkeleton({ count }: { count: number }) {
   return (
-    <ListCardContext.Provider value={{ isLoading, itemCount }}>
-      <div className="rounded-lg border bg-card p-6">{children}</div>
-    </ListCardContext.Provider>
-  )
-}
-
-export function ListCardSkeleton() {
-  const { isLoading } = useListCardContext()
-
-  if (!isLoading) {
-    return null
-  }
-
-  return (
-    <div className="space-y-2">
-      <Skeleton className="h-[52px] w-full" />
-      <Skeleton className="h-[52px] w-full" />
-      <Skeleton className="h-[52px] w-full" />
+    <div className="rounded-lg border bg-card p-6">
+      <div className="mb-4 flex items-center justify-between">
+        <Skeleton className="h-8 w-2/4" />
+        <Skeleton className="h-8 w-1/4" />
+      </div>
+      <div className="space-y-2">
+        {Array.from({ length: count }).map((_, index) => (
+          <Skeleton key={index} className="h-15.5 w-full" />
+        ))}
+      </div>
     </div>
   )
 }
@@ -60,11 +35,11 @@ export function ListCardTitle({ children }: { children: React.ReactNode }) {
 }
 
 export function ListCardHeaderAction({
-  onClick,
   children,
+  onClick,
 }: {
-  onClick: () => void
   children: React.ReactNode
+  onClick: () => void
 }) {
   return (
     <Button variant="ghost" size="sm" onClick={onClick}>
@@ -74,24 +49,12 @@ export function ListCardHeaderAction({
 }
 
 export function ListCardEmpty({ children }: { children: React.ReactNode }) {
-  const { isLoading, itemCount } = useListCardContext()
-
-  if (isLoading || itemCount > 0) {
-    return null
-  }
-
   return (
     <p className="py-8 text-center text-sm text-muted-foreground">{children}</p>
   )
 }
 
 export function ListCardItems({ children }: { children: React.ReactNode }) {
-  const { isLoading, itemCount } = useListCardContext()
-
-  if (isLoading || itemCount === 0) {
-    return null
-  }
-
   return <ItemGroup className="gap-2">{children}</ItemGroup>
 }
 

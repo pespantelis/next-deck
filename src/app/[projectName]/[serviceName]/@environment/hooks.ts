@@ -12,11 +12,13 @@ const buildKey = (projectName: string, serviceName: string) =>
 
 export function useEnvironmentVariables(
   projectName: string,
-  serviceName: string
+  serviceName: string,
+  initialData?: Record<string, string>
 ) {
   return useQuery({
     queryKey: buildKey(projectName, serviceName),
     queryFn: () => getEnvironmentVariables(projectName, serviceName),
+    initialData,
   })
 }
 

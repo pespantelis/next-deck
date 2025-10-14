@@ -33,12 +33,16 @@ import { useCreateServiceDialog } from "./create-service-dialog"
 import { useProjects } from "./hooks"
 import { ServiceList } from "./service-list"
 
-export function ProjectSidebar() {
+interface ProjectSidebarProps {
+  initialProjects?: Project[]
+}
+
+export function ProjectSidebar({ initialProjects }: ProjectSidebarProps) {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const { isMobile } = useSidebar()
   const router = useRouter()
 
-  const { data: projects = [] } = useProjects()
+  const { data: projects = [] } = useProjects(initialProjects)
   const openCreateProjectDialog = useCreateProjectDialog()
   const openCreateServiceDialog = useCreateServiceDialog()
 

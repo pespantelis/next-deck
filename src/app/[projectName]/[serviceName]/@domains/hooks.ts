@@ -6,10 +6,15 @@ import { deleteDomain, getDomains } from "./actions"
 const buildKey = (projectName: string, serviceName: string) =>
   ["service", projectName, serviceName, "domains"] as const
 
-export function useDomains(projectName: string, serviceName: string) {
+export function useDomains(
+  projectName: string,
+  serviceName: string,
+  initialData?: string[]
+) {
   return useQuery({
     queryKey: buildKey(projectName, serviceName),
     queryFn: () => getDomains(projectName, serviceName),
+    initialData,
   })
 }
 
