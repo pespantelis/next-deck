@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 
 import { AlertDialogProvider } from "@/components/alert-dialog"
+import { BreadcrumbNav } from "@/components/breadcrumb-nav"
 import { DialogProvider } from "@/components/dialog"
 import { DeckSidebar } from "@/components/sidebar"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -69,7 +70,7 @@ export default function RootLayout({
                             orientation="vertical"
                             className="mx-2 data-[orientation=vertical]:h-4"
                           />
-                          <h1 className="text-base font-medium">Dashboard</h1>
+                          <BreadcrumbNav />
                           <div className="ml-auto">
                             <ThemeToggle />
                           </div>
