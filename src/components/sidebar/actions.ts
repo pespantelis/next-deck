@@ -22,29 +22,41 @@ export async function createService(
 }
 
 export async function getProjects(): Promise<Project[]> {
-  const output = await dokku.network.list()
+  const [networksOutput, appsOutput, runningOutput, deployedOutput] =
+    await Promise.all([
+      dokku.network.list(),
+      dokku.apps.list(),
+      dokku.ps.report.running(),
+      dokku.ps.report.deployed(),
+    ])
+
   const networkSuffix = "-network"
 
-  // Keep only networks ending with network
-  return output
+  const networks = networksOutput
     .split("\n")
-    .filter((project: string) => project.endsWith(networkSuffix))
-    .map((project: string) => ({
-      name: project.replace(networkSuffix, ""),
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name))
-}
+    .filter((network) => network.endsWith(networkSuffix))
+    .map((network) => network.slice(0, -networkSuffix.length))
+    .sort()
+  const apps = appsOutput.split("\n").slice(1)
+  const running = runningOutput.split("\n")
+  const deployed = deployedOutput.split("\n")
 
-export async function getServices(projectName: string): Promise<Service[]> {
-  const output = await dokku.apps.list()
-  const projectPrefix = `${projectName}-`
+  const projects: Record<string, Service[]> = Object.fromEntries(
+    networks.map((project) => [project, []])
+  )
 
-  // Keep only services starting with project name
-  return output
-    .split("\n")
-    .filter((service: string) => service.startsWith(projectPrefix))
-    .map((service: string) => ({
-      name: service.replace(projectPrefix, ""),
-    }))
+  apps.forEach((app, i) => {
+    const project = networks.find((project) => app.startsWith(project + "-"))
+    if (!project) return // ignore unknown project
+
+    projects[project].push({
+      name: app.slice(project.length + 1), // skip project-
+      running: running[i] === "true",
+      deployed: deployed[i] === "true",
+    })
+  })
+
+  return networks
+    .map((project) => ({ name: project, services: projects[project] }))
     .sort((a, b) => a.name.localeCompare(b.name))
 }

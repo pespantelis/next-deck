@@ -1,147 +1,137 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
-import { ChevronsUpDown, PlusIcon, Server } from "lucide-react"
+import Link from "next/link"
+import { usePathname, useRouter } from "next/navigation"
+import { MinusIcon, PlayIcon, PlusIcon, SquareIcon } from "lucide-react"
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  Sidebar,
-  SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupAction,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
+  SidebarMenuSkeleton,
 } from "@/components/ui/sidebar"
-import { cn } from "@/lib/utils"
 import type { Project } from "@/types"
 
+import { Button } from "../ui/button"
 import { useCreateProjectDialog } from "./create-project-dialog"
 import { useCreateServiceDialog } from "./create-service-dialog"
 import { useProjects } from "./hooks"
-import { ServiceList } from "./service-list"
 
-interface ProjectSidebarProps {
-  initialProjects?: Project[]
+const status = {
+  running: <PlayIcon className="text-green-500/80" aria-label="Running" />,
+  stopped: <SquareIcon className="text-red-500/80" aria-label="Stopped" />,
+  created: <MinusIcon className="text-sky-500/80" aria-label="Created" />,
 }
 
-export function ProjectSidebar({ initialProjects }: ProjectSidebarProps) {
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
-  const { isMobile } = useSidebar()
-  const router = useRouter()
+interface DeckSidebarGroupsProps {
+  initialProjects: Project[]
+}
 
-  const { data: projects = [] } = useProjects(initialProjects)
-  const openCreateProjectDialog = useCreateProjectDialog()
+export function DeckSidebarGroups({ initialProjects }: DeckSidebarGroupsProps) {
+  const projects = useProjects(initialProjects)
+
+  return projects.map((project) => (
+    <DeckSidebarGroup key={project.name} project={project} />
+  ))
+}
+
+function DeckSidebarGroup({ project }: { project: Project }) {
+  const router = useRouter()
+  const pathname = usePathname()
   const openCreateServiceDialog = useCreateServiceDialog()
 
-  // Set initial project when projects load
-  useEffect(() => {
-    if (projects.length > 0 && !selectedProject) {
-      setSelectedProject(projects[0])
-    }
-  }, [projects, selectedProject])
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel className="text-sm">{project.name}</SidebarGroupLabel>
+      <SidebarGroupAction
+        onClick={() =>
+          openCreateServiceDialog(project.name, (serviceName) => {
+            router.push(`/${project.name}/${serviceName}`)
+          })
+        }
+      >
+        <PlusIcon />
+        <span className="sr-only">Add service</span>
+      </SidebarGroupAction>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {project.services.length === 0 && (
+            <SidebarMenuItem>
+              <SidebarMenuButton size="sm" disabled>
+                <span>No services</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
+
+          {project.services.map((service) => {
+            const servicePath = `/${project.name}/${service.name}`
+            const isActive = pathname.startsWith(servicePath)
+            const icon =
+              status[
+                service.running
+                  ? "running"
+                  : service.deployed
+                    ? "stopped"
+                    : "created"
+              ]
+
+            return (
+              <SidebarMenuItem key={service.name}>
+                <SidebarMenuButton size="sm" isActive={isActive} asChild>
+                  <Link href={servicePath}>
+                    {icon}
+                    <span>{service.name}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )
+          })}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  )
+}
+
+export function DeckSidebarGroupsSkeleton() {
+  return Array.from({ length: 3 }).map((_, groupIndex) => (
+    <SidebarGroup key={groupIndex}>
+      <SidebarMenuSkeleton />
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {Array.from({ length: 2 + (groupIndex % 2) }).map((_, itemIndex) => (
+            <SidebarMenuItem key={itemIndex}>
+              <SidebarMenuSkeleton className="h-7" showIcon />
+            </SidebarMenuItem>
+          ))}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  ))
+}
+
+export function DeckSidebarFooter() {
+  const openCreateProjectDialog = useCreateProjectDialog()
 
   return (
-    <Sidebar collapsible="offcanvas" variant="inset">
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton
-                  size="lg"
-                  className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
-                >
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                    <Server className="size-4" />
-                  </div>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span
-                      className={cn("truncate font-medium", {
-                        "text-muted-foreground": !selectedProject?.name,
-                      })}
-                    >
-                      {selectedProject?.name || "loading..."}
-                    </span>
-                  </div>
-                  <ChevronsUpDown className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-                align="start"
-                side={isMobile ? "bottom" : "right"}
-                sideOffset={4}
-              >
-                <DropdownMenuLabel className="text-xs text-muted-foreground">
-                  Projects
-                </DropdownMenuLabel>
-                {projects.map((project) => (
-                  <DropdownMenuItem
-                    key={project.name}
-                    onClick={() => setSelectedProject(project)}
-                  >
-                    <div className="flex size-6 items-center justify-center rounded-md border">
-                      <Server className="size-3.5 shrink-0" />
-                    </div>
-                    <span>{project.name}</span>
-                  </DropdownMenuItem>
-                ))}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() =>
-                    openCreateProjectDialog((projectName) => {
-                      setSelectedProject({ name: projectName })
-                    })
-                  }
-                >
-                  <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-                    <Server className="size-4" />
-                  </div>
-                  <div className="font-medium text-muted-foreground">
-                    Add project
-                  </div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
-
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Services</SidebarGroupLabel>
-          {selectedProject && (
-            <SidebarGroupAction
-              onClick={() =>
-                openCreateServiceDialog(selectedProject.name, (serviceName) => {
-                  router.push(`/${selectedProject.name}/${serviceName}`)
-                })
-              }
+    <SidebarFooter>
+      <SidebarMenu>
+        <SidebarMenuItem>
+          <SidebarMenuButton size="lg" asChild>
+            <Button
+              variant="outline"
+              onClick={() => openCreateProjectDialog(() => {})}
             >
               <PlusIcon />
-              <span className="sr-only">Add service</span>
-            </SidebarGroupAction>
-          )}
-          <SidebarGroupContent>
-            {selectedProject && (
-              <ServiceList projectName={selectedProject.name} />
-            )}
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+              <span>New project</span>
+            </Button>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarMenu>
+    </SidebarFooter>
   )
 }

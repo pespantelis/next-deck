@@ -3,31 +3,17 @@ import { toast } from "sonner"
 
 import type { Project, Service } from "@/types"
 
-import {
-  createProject,
-  createService,
-  getProjects,
-  getServices,
-} from "./actions"
+import { createProject, createService, getProjects } from "./actions"
 
-const buildProjectsKey = () => ["projects"] as const
-const buildServicesKey = (projectName: string) =>
-  ["services", projectName] as const
-
-export function useProjects(initialData?: Project[]) {
-  return useQuery({
-    queryKey: buildProjectsKey(),
+export function useProjects(initialData: Project[]): Project[] {
+  const { data: projects = [] } = useQuery({
+    queryKey: ["projects"],
     queryFn: getProjects,
     initialData,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   })
-}
 
-export function useServices(projectName: string, initialData?: Service[]) {
-  return useQuery({
-    queryKey: buildServicesKey(projectName),
-    queryFn: () => getServices(projectName),
-    initialData,
-  })
+  return projects
 }
 
 export function useCreateProject(onSuccess: (projectName: string) => void) {
@@ -36,7 +22,12 @@ export function useCreateProject(onSuccess: (projectName: string) => void) {
   return useMutation({
     mutationFn: ({ name }: { name: string }) => createProject(name),
     onSuccess: async (_, { name }) => {
-      await queryClient.invalidateQueries({ queryKey: buildProjectsKey() })
+      // Optimistically add project to the projects list
+      queryClient.setQueryData(["projects"], (old: Project[] = []) => {
+        const newProject: Project = { name, services: [] }
+        return [...old, newProject].sort((a, b) => a.name.localeCompare(b.name))
+      })
+
       onSuccess(name)
       toast.success("Project created successfully.")
     },
@@ -55,9 +46,26 @@ export function useCreateService(onSuccess: (serviceName: string) => void) {
       serviceName: string
     }) => createService(projectName, serviceName),
     onSuccess: async (_, { projectName, serviceName }) => {
-      await queryClient.invalidateQueries({
-        queryKey: buildServicesKey(projectName),
+      const newService: Service = {
+        name: serviceName,
+        running: false,
+        deployed: false,
+      }
+
+      // Optimistically add service to the project in the main projects query
+      queryClient.setQueryData(["projects"], (old: Project[] = []) => {
+        return old.map((project) =>
+          project.name === projectName
+            ? {
+                ...project,
+                services: [...project.services, newService].sort((a, b) =>
+                  a.name.localeCompare(b.name)
+                ),
+              }
+            : project
+        )
       })
+
       onSuccess(serviceName)
       toast.success("Service created successfully.")
     },

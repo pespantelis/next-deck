@@ -65,6 +65,12 @@ export const dokku = {
   proxy: {
     disable: (app: string) => write(`proxy:disable ${app}`),
   },
+  ps: {
+    report: {
+      running: () => read(`ps:report --running`),
+      deployed: () => read(`ps:report --deployed`),
+    },
+  },
   storage: {
     list: (app: string) => read(`storage:list ${app}`),
     unmount: (app: string, path: string) =>
