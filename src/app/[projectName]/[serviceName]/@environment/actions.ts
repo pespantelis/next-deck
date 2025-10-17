@@ -23,7 +23,8 @@ export async function getEnvironmentVariables(
     if (
       key.startsWith("DOKKU_") ||
       key.startsWith("GIT_") ||
-      key === "NO_VHOST"
+      key === "NO_VHOST" ||
+      key === "PORT"
     ) {
       continue
     }
@@ -44,6 +45,10 @@ export async function setEnvironmentVariable(
   key: string,
   value: string
 ): Promise<void> {
+  if (key === "PORT") {
+    throw new Error("PORT is a special environment variable and cannot be set.")
+  }
+
   const appName = `${projectName}-${serviceName}`
   return dokku.config.set(appName, key, value)
 }
