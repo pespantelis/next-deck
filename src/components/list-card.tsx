@@ -3,21 +3,30 @@
 import { Button } from "@/components/ui/button"
 import { Item, ItemActions, ItemContent, ItemGroup } from "@/components/ui/item"
 import { Skeleton } from "@/components/ui/skeleton"
+import { cn } from "@/lib/utils"
 
 export function ListCard({ children }: { children: React.ReactNode }) {
   return <div className="rounded-lg border bg-card p-6">{children}</div>
 }
 
-export function ListCardSkeleton({ count }: { count: number }) {
+export function ListCardSkeleton({
+  className,
+  count,
+  showAction = false,
+}: {
+  className?: string
+  count: number
+  showAction?: boolean
+}) {
   return (
     <div className="rounded-lg border bg-card p-6">
       <div className="mb-4 flex items-center justify-between">
         <Skeleton className="h-8 w-2/4" />
-        <Skeleton className="h-8 w-1/4" />
+        {showAction && <Skeleton className="h-8 w-1/4" />}
       </div>
       <div className="space-y-2">
         {Array.from({ length: count }).map((_, index) => (
-          <Skeleton key={index} className="h-15.5 w-full" />
+          <Skeleton key={index} className={cn("h-15.5 w-full", className)} />
         ))}
       </div>
     </div>
@@ -26,7 +35,7 @@ export function ListCardSkeleton({ count }: { count: number }) {
 
 export function ListCardHeader({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mb-4 flex items-center justify-between">{children}</div>
+    <div className="mb-4 flex h-8 items-center justify-between">{children}</div>
   )
 }
 
@@ -94,7 +103,12 @@ export function ListCardItemAction({
   disabled,
 }: ListCardItemActionProps) {
   return (
-    <Button variant="ghost" size="icon" onClick={onClick} disabled={disabled}>
+    <Button
+      variant="secondary"
+      size="icon"
+      onClick={onClick}
+      disabled={disabled}
+    >
       {children}
     </Button>
   )

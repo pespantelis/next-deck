@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
-import { MinusIcon, PlayIcon, PlusIcon, SquareIcon } from "lucide-react"
+import { PlusIcon } from "lucide-react"
 
 import {
   SidebarFooter,
@@ -17,16 +17,11 @@ import {
 } from "@/components/ui/sidebar"
 import type { Project } from "@/types"
 
+import { StatusIcon } from "../status"
 import { Button } from "../ui/button"
 import { useCreateProjectDialog } from "./create-project-dialog"
 import { useCreateServiceDialog } from "./create-service-dialog"
 import { useProjects } from "./hooks"
-
-const status = {
-  running: <PlayIcon className="text-green-500/80" aria-label="Running" />,
-  stopped: <SquareIcon className="text-red-500/80" aria-label="Stopped" />,
-  created: <MinusIcon className="text-sky-500/80" aria-label="Created" />,
-}
 
 interface DeckSidebarGroupsProps {
   initialProjects: Project[]
@@ -71,20 +66,15 @@ function DeckSidebarGroup({ project }: { project: Project }) {
           {project.services.map((service) => {
             const servicePath = `/${project.name}/${service.name}`
             const isActive = pathname.startsWith(servicePath)
-            const icon =
-              status[
-                service.running
-                  ? "running"
-                  : service.deployed
-                    ? "stopped"
-                    : "created"
-              ]
 
             return (
               <SidebarMenuItem key={service.name}>
                 <SidebarMenuButton size="sm" isActive={isActive} asChild>
                   <Link href={servicePath}>
-                    {icon}
+                    <StatusIcon
+                      running={service.running}
+                      deployed={service.deployed}
+                    />
                     <span>{service.name}</span>
                   </Link>
                 </SidebarMenuButton>

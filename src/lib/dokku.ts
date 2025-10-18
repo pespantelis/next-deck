@@ -46,6 +46,7 @@ export const dokku = {
   },
   config: {
     export: (app: string) => read(`config:export ${app} --format shell`),
+    get: (app: string, key: string) => read(`config:get ${app} ${key}`),
     set: (app: string, key: string, value: string) =>
       write(`config:set --no-restart ${app} ${key}=${value}`),
     unset: (app: string, key: string) =>
@@ -64,11 +65,13 @@ export const dokku = {
   },
   proxy: {
     disable: (app: string) => write(`proxy:disable ${app}`),
+    enable: (app: string) => write(`proxy:enable ${app}`),
+    report: (app: string) => read(`proxy:report ${app} --proxy-enabled`),
   },
   ps: {
     report: {
-      running: () => read(`ps:report --running`),
-      deployed: () => read(`ps:report --deployed`),
+      running: (app = "") => read(`ps:report ${app} --running`),
+      deployed: (app = "") => read(`ps:report ${app} --deployed`),
     },
   },
   storage: {
