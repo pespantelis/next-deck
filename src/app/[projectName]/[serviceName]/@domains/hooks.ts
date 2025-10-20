@@ -1,7 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-import { deleteDomain, enableLetsEncrypt, getDomains } from "./actions"
+import {
+  addDomain,
+  deleteDomain,
+  enableLetsEncrypt,
+  getDomains,
+} from "./actions"
 
 const buildKey = (projectName: string, serviceName: string) =>
   ["service", projectName, serviceName, "domains"] as const
@@ -15,6 +20,25 @@ export function useDomains(
     queryKey: buildKey(projectName, serviceName),
     queryFn: () => getDomains(projectName, serviceName),
     initialData,
+  })
+}
+
+export function useAddDomain(
+  projectName: string,
+  serviceName: string,
+  onSuccess: () => void
+) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (domain: string) => addDomain(projectName, serviceName, domain),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: buildKey(projectName, serviceName),
+      })
+      onSuccess()
+      toast.success("Domain added successfully.")
+    },
   })
 }
 

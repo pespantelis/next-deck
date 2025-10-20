@@ -59,6 +59,7 @@ export const dokku = {
       write(`config:unset --no-restart ${app} ${key}`),
   },
   domains: {
+    add: (app: string, domain: string) => write(`domains:add ${app} ${domain}`),
     report: (app: string) => read(`domains:report ${app} --domains-app-vhosts`),
     remove: (app: string, domain: string) =>
       write(`domains:remove ${app} ${domain}`),

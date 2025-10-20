@@ -24,6 +24,7 @@ import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group"
 import { ItemMedia, ItemTitle } from "@/components/ui/item"
 import { Spinner } from "@/components/ui/spinner"
 
+import { useAddDomainDialog } from "./add-domain-dialog"
 import { useDeleteDomainAlertDialog } from "./delete-domain-dialog"
 import { useDomains, useEnableLetsEncrypt } from "./hooks"
 
@@ -43,6 +44,7 @@ export function DomainsListCard({
     serviceName,
     initialData
   )
+  const openAddDialog = useAddDomainDialog(projectName, serviceName)
   const openDeleteDialog = useDeleteDomainAlertDialog(projectName, serviceName)
 
   const enableLetsEncrypt = useEnableLetsEncrypt(projectName, serviceName)
@@ -54,7 +56,7 @@ export function DomainsListCard({
         <ButtonGroup>
           <ListCardHeaderAction
             disabled={enableLetsEncrypt.isPending}
-            onClick={() => {}}
+            onClick={openAddDialog}
           >
             <PlusIcon /> Add domain
           </ListCardHeaderAction>

@@ -18,6 +18,15 @@ export async function getDomains(
   }
 }
 
+export async function addDomain(
+  projectName: string,
+  serviceName: string,
+  domain: string
+): Promise<void> {
+  const appName = `${projectName}-${serviceName}`
+  return dokku.domains.add(appName, domain)
+}
+
 export async function deleteDomain(
   projectName: string,
   serviceName: string,
