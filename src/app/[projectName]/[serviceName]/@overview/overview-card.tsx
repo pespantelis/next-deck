@@ -6,7 +6,10 @@ import {
   HatGlassesIcon,
   LinkIcon,
   PencilIcon,
+  PlayIcon,
+  RefreshCwIcon,
   ServerIcon,
+  SquareIcon,
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -22,10 +25,17 @@ import {
 } from "@/components/list-card"
 import { StatusIcon, StatusText } from "@/components/status"
 import { ItemDescription, ItemMedia, ItemTitle } from "@/components/ui/item"
+import { Spinner } from "@/components/ui/spinner"
 import { Switch } from "@/components/ui/switch"
 
 import { useEditPortDialog } from "./edit-port-dialog"
-import { useOverview, useToggleVisibility } from "./hooks"
+import {
+  useOverview,
+  useRestartService,
+  useStartService,
+  useStopService,
+  useToggleVisibility,
+} from "./hooks"
 
 interface OverviewCardProps {
   projectName: string
@@ -48,6 +58,10 @@ export function OverviewCard({
   const toggleVisibility = useToggleVisibility(projectName, serviceName)
   const editPortDialog = useEditPortDialog(projectName, serviceName)
 
+  const startService = useStartService(projectName, serviceName)
+  const stopService = useStopService(projectName, serviceName)
+  const restartService = useRestartService(projectName, serviceName)
+
   const internalEndpoint = `http://${overview.alias}:${overview.port}`
 
   const copyInternalEndpoint = async () => {
@@ -58,6 +72,9 @@ export function OverviewCard({
       toast.error("Failed to copy endpoint")
     }
   }
+
+  const disabled =
+    startService.isPending || stopService.isPending || restartService.isPending
 
   return (
     <ListCard>
@@ -82,6 +99,34 @@ export function OverviewCard({
               />
             </ItemDescription>
           </ListCardItemContent>
+          <ListCardItemActions>
+            {!overview.running ? (
+              <ListCardItemAction
+                onClick={() => startService.mutate()}
+                disabled={disabled}
+                className="text-green-500"
+              >
+                {startService.isPending ? <Spinner /> : <PlayIcon />}
+              </ListCardItemAction>
+            ) : (
+              <>
+                <ListCardItemAction
+                  onClick={() => stopService.mutate()}
+                  disabled={disabled}
+                  className="text-red-500"
+                >
+                  {stopService.isPending ? <Spinner /> : <SquareIcon />}
+                </ListCardItemAction>
+                <ListCardItemAction
+                  onClick={() => restartService.mutate()}
+                  disabled={disabled}
+                  className="text-sky-500"
+                >
+                  {restartService.isPending ? <Spinner /> : <RefreshCwIcon />}
+                </ListCardItemAction>
+              </>
+            )}
+          </ListCardItemActions>
         </ListCardItem>
 
         <ListCardItem>

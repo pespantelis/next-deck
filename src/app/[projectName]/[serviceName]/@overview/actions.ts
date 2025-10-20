@@ -43,3 +43,27 @@ export async function updateServicePort(
 
   return dokku.config.set(appName, { PORT: port })
 }
+
+export async function startService(
+  projectName: string,
+  serviceName: string
+): Promise<void> {
+  const appName = `${projectName}-${serviceName}`
+  return dokku.ps.start(appName)
+}
+
+export async function stopService(
+  projectName: string,
+  serviceName: string
+): Promise<void> {
+  const appName = `${projectName}-${serviceName}`
+  return dokku.ps.stop(appName)
+}
+
+export async function restartService(
+  projectName: string,
+  serviceName: string
+): Promise<void> {
+  const appName = `${projectName}-${serviceName}`
+  return dokku.ps.restart(appName)
+}

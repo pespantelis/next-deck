@@ -78,6 +78,9 @@ export const dokku = {
       running: (app = "") => read(`ps:report ${app} --running`),
       deployed: (app = "") => read(`ps:report ${app} --deployed`),
     },
+    restart: (app: string) => write(`ps:restart ${app}`),
+    start: (app: string) => write(`ps:start ${app}`),
+    stop: (app: string) => write(`ps:stop ${app}`),
   },
   storage: {
     list: (app: string) => read(`storage:list ${app}`),

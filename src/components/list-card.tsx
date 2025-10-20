@@ -83,25 +83,6 @@ export function ListCardItemActions({
   return <ItemActions>{children}</ItemActions>
 }
 
-interface ListCardItemActionProps {
-  onClick: () => void
-  children: React.ReactNode
-  disabled?: boolean
-}
-
-export function ListCardItemAction({
-  onClick,
-  children,
-  disabled,
-}: ListCardItemActionProps) {
-  return (
-    <Button
-      variant="secondary"
-      size="icon"
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {children}
-    </Button>
-  )
+export function ListCardItemAction(props: ComponentProps<typeof Button>) {
+  return <Button variant="secondary" size="icon" {...props} />
 }
