@@ -63,6 +63,10 @@ export const dokku = {
     remove: (app: string, domain: string) =>
       write(`domains:remove ${app} ${domain}`),
   },
+  letsencrypt: {
+    active: (app: string) => read(`letsencrypt:active ${app}`),
+    enable: (app: string) => write(`letsencrypt:enable ${app}`),
+  },
   proxy: {
     disable: (app: string) => write(`proxy:disable ${app}`),
     enable: (app: string) => write(`proxy:enable ${app}`),

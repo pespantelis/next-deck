@@ -1,6 +1,12 @@
 "use client"
 
-import { PlusIcon, Trash2Icon } from "lucide-react"
+import {
+  LockIcon,
+  PlusIcon,
+  RefreshCcwIcon,
+  Trash2Icon,
+  UnlockIcon,
+} from "lucide-react"
 
 import {
   ListCard,
@@ -14,15 +20,17 @@ import {
   ListCardItems,
   ListCardTitle,
 } from "@/components/list-card"
-import { ItemTitle } from "@/components/ui/item"
+import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group"
+import { ItemMedia, ItemTitle } from "@/components/ui/item"
+import { Spinner } from "@/components/ui/spinner"
 
 import { useDeleteDomainAlertDialog } from "./delete-domain-dialog"
-import { useDomains } from "./hooks"
+import { useDomains, useEnableLetsEncrypt } from "./hooks"
 
 interface DomainsListCardProps {
   projectName: string
   serviceName: string
-  initialData: string[]
+  initialData: { domains: string[]; letsencrypt: boolean }
 }
 
 export function DomainsListCard({
@@ -30,30 +38,51 @@ export function DomainsListCard({
   serviceName,
   initialData,
 }: DomainsListCardProps) {
-  const { data: domains = [] } = useDomains(
+  const { data: info = { domains: [], letsencrypt: false } } = useDomains(
     projectName,
     serviceName,
     initialData
   )
   const openDeleteDialog = useDeleteDomainAlertDialog(projectName, serviceName)
 
+  const enableLetsEncrypt = useEnableLetsEncrypt(projectName, serviceName)
+
   return (
     <ListCard>
       <ListCardHeader>
         <ListCardTitle>Domains</ListCardTitle>
-        <ListCardHeaderAction onClick={() => {}}>
-          <PlusIcon /> Add domain
-        </ListCardHeaderAction>
+        <ButtonGroup>
+          <ListCardHeaderAction
+            disabled={enableLetsEncrypt.isPending}
+            onClick={() => {}}
+          >
+            <PlusIcon /> Add domain
+          </ListCardHeaderAction>
+          <ButtonGroupSeparator />
+          <ListCardHeaderAction
+            disabled={enableLetsEncrypt.isPending}
+            onClick={() => enableLetsEncrypt.mutate()}
+          >
+            {enableLetsEncrypt.isPending ? <Spinner /> : <RefreshCcwIcon />}
+          </ListCardHeaderAction>
+        </ButtonGroup>
       </ListCardHeader>
 
-      {domains.length === 0 && (
+      {info.domains.length === 0 && (
         <ListCardEmpty>No domains configured</ListCardEmpty>
       )}
 
-      {domains.length > 0 && (
+      {info.domains.length > 0 && (
         <ListCardItems>
-          {domains.map((domain) => (
+          {info.domains.map((domain) => (
             <ListCardItem key={domain}>
+              <ItemMedia variant="icon">
+                {info.letsencrypt ? (
+                  <LockIcon className="text-blue-500" />
+                ) : (
+                  <UnlockIcon className="text-yellow-500" />
+                )}
+              </ItemMedia>
               <ListCardItemContent>
                 <ItemTitle className="w-full font-mono">
                   <span className="truncate">{domain}</span>
