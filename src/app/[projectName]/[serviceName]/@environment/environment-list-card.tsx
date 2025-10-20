@@ -1,6 +1,12 @@
 "use client"
 
-import { PencilIcon, PlusIcon, Trash2Icon } from "lucide-react"
+import { useCallback } from "react"
+import {
+  ClipboardListIcon,
+  PencilIcon,
+  PlusIcon,
+  Trash2Icon,
+} from "lucide-react"
 
 import {
   ListCard,
@@ -14,10 +20,12 @@ import {
   ListCardItems,
   ListCardTitle,
 } from "@/components/list-card"
+import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group"
 import { ItemTitle } from "@/components/ui/item"
+import { Spinner } from "@/components/ui/spinner"
 
 import { useDeleteEnvironmentVariableAlertDialog } from "./delete-environment-variable-dialog"
-import { useEnvironmentVariables } from "./hooks"
+import { useEnvironmentVariables, useImportEnvironmentVariables } from "./hooks"
 import { useSaveEnvironmentVariableDialog } from "./save-environment-variable-dialog"
 
 interface EnvironmentListCardProps {
@@ -45,15 +53,36 @@ export function EnvironmentListCard({
     serviceName
   )
 
+  const { mutate: importFromClipboard, isPending: isImporting } =
+    useImportEnvironmentVariables(projectName, serviceName)
+
+  const handleImportFromClipboard = useCallback(async () => {
+    const input = await navigator.clipboard.readText()
+
+    return importFromClipboard(input)
+  }, [importFromClipboard])
+
   const items = Object.entries(environment)
 
   return (
     <ListCard>
       <ListCardHeader>
         <ListCardTitle>Environment variables</ListCardTitle>
-        <ListCardHeaderAction onClick={() => openSaveDialog()}>
-          <PlusIcon /> Add variable
-        </ListCardHeaderAction>
+        <ButtonGroup>
+          <ListCardHeaderAction
+            disabled={isImporting}
+            onClick={() => openSaveDialog()}
+          >
+            <PlusIcon /> Add variable
+          </ListCardHeaderAction>
+          <ButtonGroupSeparator />
+          <ListCardHeaderAction
+            disabled={isImporting}
+            onClick={handleImportFromClipboard}
+          >
+            {isImporting ? <Spinner /> : <ClipboardListIcon />}
+          </ListCardHeaderAction>
+        </ButtonGroup>
       </ListCardHeader>
 
       {items.length === 0 && (

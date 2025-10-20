@@ -45,10 +45,14 @@ export const dokku = {
     list: () => read("network:list"),
   },
   config: {
-    export: (app: string) => read(`config:export ${app} --format shell`),
+    export: (app: string) => read(`config:export ${app} --format envfile`),
     get: (app: string, key: string) => read(`config:get ${app} ${key}`),
-    set: (app: string, key: string, value: string) =>
-      write(`config:set --no-restart ${app} ${key}=\\"${value}\\"`),
+    set: (app: string, vars: Record<string, string>) => {
+      const pairs = Object.entries(vars)
+        .map(([key, value]) => `${key}=\\"${value}\\"`)
+        .join(" ")
+      return write(`config:set --no-restart ${app} ${pairs}`)
+    },
     unset: (app: string, key: string) =>
       write(`config:unset --no-restart ${app} ${key}`),
   },

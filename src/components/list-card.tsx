@@ -1,5 +1,7 @@
 "use client"
 
+import { ComponentProps } from "react"
+
 import { Button } from "@/components/ui/button"
 import { Item, ItemActions, ItemContent, ItemGroup } from "@/components/ui/item"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -43,18 +45,8 @@ export function ListCardTitle({ children }: { children: React.ReactNode }) {
   return <h2 className="text-xl font-semibold">{children}</h2>
 }
 
-export function ListCardHeaderAction({
-  children,
-  onClick,
-}: {
-  children: React.ReactNode
-  onClick: () => void
-}) {
-  return (
-    <Button variant="ghost" size="sm" onClick={onClick}>
-      {children}
-    </Button>
-  )
+export function ListCardHeaderAction(props: ComponentProps<typeof Button>) {
+  return <Button variant="outline" size="sm" {...props} />
 }
 
 export function ListCardEmpty({ children }: { children: React.ReactNode }) {

@@ -4,6 +4,7 @@ import { toast } from "sonner"
 import {
   deleteEnvironmentVariable,
   getEnvironmentVariables,
+  importEnvironmentVariables,
   setEnvironmentVariable,
 } from "./actions"
 
@@ -58,6 +59,26 @@ export function useDeleteEnvironmentVariable(
       })
       onSuccess()
       toast.success("Environment variable deleted successfully.")
+    },
+  })
+}
+
+export function useImportEnvironmentVariables(
+  projectName: string,
+  serviceName: string
+) {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (envText: string) =>
+      importEnvironmentVariables(projectName, serviceName, envText),
+    onSuccess: async (count) => {
+      await queryClient.invalidateQueries({
+        queryKey: buildKey(projectName, serviceName),
+      })
+      toast.success(
+        `Successfully imported ${count} environment variable${count !== 1 ? "s" : ""}.`
+      )
     },
   })
 }

@@ -41,5 +41,5 @@ export async function updateServicePort(
 ): Promise<void> {
   const appName = `${projectName}-${serviceName}`
 
-  return dokku.config.set(appName, "PORT", port)
+  return dokku.config.set(appName, { PORT: port })
 }

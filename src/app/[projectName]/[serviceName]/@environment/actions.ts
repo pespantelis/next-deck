@@ -2,41 +2,16 @@
 
 import { dokku } from "@/lib/dokku"
 
+import { parseEnvText, validateKey } from "./helpers"
+
 export async function getEnvironmentVariables(
   projectName: string,
   serviceName: string
 ): Promise<Record<string, string>> {
   const appName = `${projectName}-${serviceName}`
   const output = await dokku.config.export(appName)
-  const lines = output.split(" ").filter(Boolean)
 
-  const env: Record<string, string> = {}
-  for (const line of lines) {
-    const equalIndex = line.indexOf("=")
-    if (equalIndex === -1) {
-      throw new Error(`Invalid environment variable: ${line}`)
-    }
-
-    const key = line.slice(0, equalIndex)
-    const value = line.slice(equalIndex + 1)
-
-    if (
-      key.startsWith("DOKKU_") ||
-      key.startsWith("GIT_") ||
-      key === "NO_VHOST" ||
-      key === "PORT"
-    ) {
-      continue
-    }
-
-    if (!value.startsWith("'") || !value.endsWith("'")) {
-      throw new Error(`Invalid environment variable: ${line}`)
-    }
-
-    env[key] = value.slice(1, -1)
-  }
-
-  return env
+  return parseEnvText(output, false)
 }
 
 export async function setEnvironmentVariable(
@@ -45,12 +20,10 @@ export async function setEnvironmentVariable(
   key: string,
   value: string
 ): Promise<void> {
-  if (key === "PORT") {
-    throw new Error("PORT is a special environment variable and cannot be set.")
-  }
+  validateKey(key, "set manually")
 
   const appName = `${projectName}-${serviceName}`
-  return dokku.config.set(appName, key, value)
+  return dokku.config.set(appName, { [key]: value })
 }
 
 export async function deleteEnvironmentVariable(
@@ -58,6 +31,24 @@ export async function deleteEnvironmentVariable(
   serviceName: string,
   key: string
 ): Promise<void> {
+  validateKey(key, "deleted")
+
   const appName = `${projectName}-${serviceName}`
   return dokku.config.unset(appName, key)
+}
+
+export async function importEnvironmentVariables(
+  projectName: string,
+  serviceName: string,
+  envText: string
+): Promise<number> {
+  const parsed = parseEnvText(envText, true)
+
+  const count = Object.keys(parsed).length
+  if (count > 0) {
+    const appName = `${projectName}-${serviceName}`
+    await dokku.config.set(appName, parsed)
+  }
+
+  return count
 }

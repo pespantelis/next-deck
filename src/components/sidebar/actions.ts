@@ -17,7 +17,7 @@ export async function createService(
   return dokku.apps.create(appName).then(async () => {
     return dokku.options.add(appName, networkName).then(async () => {
       return dokku.proxy.disable(appName).then(async () => {
-        return dokku.config.set(appName, "PORT", "5000")
+        return dokku.config.set(appName, { PORT: "5000" })
       })
     })
   })
