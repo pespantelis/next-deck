@@ -43,6 +43,8 @@ export const dokku = {
   network: {
     create: (name: string) => write(`network:create ${name}`),
     list: () => read("network:list"),
+    set: (app: string, network: string) =>
+      write(`network:set ${app} attach-post-create ${network}`),
   },
   config: {
     export: (app: string) => read(`config:export ${app} --format envfile`),
@@ -60,12 +62,6 @@ export const dokku = {
     report: (app: string) => read(`domains:report ${app} --domains-app-vhosts`),
     remove: (app: string, domain: string) =>
       write(`domains:remove ${app} ${domain}`),
-  },
-  options: {
-    add: (app: string, network: string) =>
-      write(
-        `docker-options:add ${app} deploy,run "--network ${network} --network-alias ${app}"`
-      ),
   },
   proxy: {
     disable: (app: string) => write(`proxy:disable ${app}`),

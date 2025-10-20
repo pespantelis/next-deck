@@ -13,7 +13,7 @@ export async function getOverview(projectName: string, serviceName: string) {
   ])
 
   return {
-    alias: appName,
+    alias: appName + ".web",
     port: port,
     isPublic: proxyStatus === "true",
     running: runningStatus === "true",
