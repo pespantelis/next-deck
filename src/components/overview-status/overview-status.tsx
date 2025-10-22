@@ -35,7 +35,10 @@ export function OverviewStatus({
   const restartService = useRestartService(type, projectName, serviceName)
 
   const disabled =
-    startService.isPending || stopService.isPending || restartService.isPending
+    !deployed ||
+    startService.isPending ||
+    stopService.isPending ||
+    restartService.isPending
 
   return (
     <ListCardItem>
