@@ -5,6 +5,12 @@ import { usePathname, useRouter } from "next/navigation"
 import { PlusIcon } from "lucide-react"
 
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupAction,
@@ -20,7 +26,10 @@ import type { Project } from "@/types"
 import { StatusIcon } from "../status"
 import { Button } from "../ui/button"
 import { useCreateProjectDialog } from "./create-project-dialog"
-import { useCreateServiceDialog } from "./create-service-dialog"
+import {
+  useCreateAppServiceDialog,
+  useCreatePostgresServiceDialog,
+} from "./create-service-dialog"
 import { useProjects } from "./hooks"
 
 interface DeckSidebarGroupsProps {
@@ -38,21 +47,40 @@ export function DeckSidebarGroups({ initialProjects }: DeckSidebarGroupsProps) {
 function DeckSidebarGroup({ project }: { project: Project }) {
   const router = useRouter()
   const pathname = usePathname()
-  const openCreateServiceDialog = useCreateServiceDialog()
+  const openCreateAppServiceDialog = useCreateAppServiceDialog()
+  const openCreatePostgresServiceDialog = useCreatePostgresServiceDialog()
+
+  const navigateToService = (serviceName: string) => {
+    router.push(`/${project.name}/${serviceName}`)
+  }
 
   return (
     <SidebarGroup>
       <SidebarGroupLabel className="text-sm">{project.name}</SidebarGroupLabel>
-      <SidebarGroupAction
-        onClick={() =>
-          openCreateServiceDialog(project.name, (serviceName) => {
-            router.push(`/${project.name}/${serviceName}`)
-          })
-        }
-      >
-        <PlusIcon />
-        <span className="sr-only">Add service</span>
-      </SidebarGroupAction>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <SidebarGroupAction>
+            <PlusIcon />
+            <span className="sr-only">Add service</span>
+          </SidebarGroupAction>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start">
+          <DropdownMenuItem
+            onClick={() =>
+              openCreateAppServiceDialog(project.name, navigateToService)
+            }
+          >
+            App
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() =>
+              openCreatePostgresServiceDialog(project.name, navigateToService)
+            }
+          >
+            Postgres
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <SidebarGroupContent>
         <SidebarMenu>
           {project.services.length === 0 && (

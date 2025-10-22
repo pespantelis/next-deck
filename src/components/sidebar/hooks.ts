@@ -1,9 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-import type { Project, Service } from "@/types"
+import type {
+  Project,
+  Service,
+  ServiceCreatedCallback,
+  ServiceType,
+} from "@/types"
 
-import { createProject, createService, getProjects } from "./actions"
+import { createProject, getProjects } from "./actions"
 
 export function useProjects(initialData: Project[]): Project[] {
   const { data: projects = [] } = useQuery({
@@ -34,7 +39,11 @@ export function useCreateProject(onSuccess: (projectName: string) => void) {
   })
 }
 
-export function useCreateService(onSuccess: (serviceName: string) => void) {
+export function useCreateService(
+  serviceType: ServiceType,
+  mutationFn: (projectName: string, serviceName: string) => Promise<void>,
+  onSuccess: ServiceCreatedCallback
+) {
   const queryClient = useQueryClient()
 
   return useMutation({
@@ -44,9 +53,11 @@ export function useCreateService(onSuccess: (serviceName: string) => void) {
     }: {
       projectName: string
       serviceName: string
-    }) => createService(projectName, serviceName),
+    }) => mutationFn(projectName, serviceName),
+
     onSuccess: async (_, { projectName, serviceName }) => {
       const newService: Service = {
+        type: serviceType,
         name: serviceName,
         running: false,
         deployed: false,

@@ -15,7 +15,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { FieldGroup } from "@/components/ui/field"
+import type { ServiceCreatedCallback, ServiceType } from "@/types"
 
+import { createAppService, createPostgresService } from "./actions"
 import { useCreateService } from "./hooks"
 
 const formSchema = z.object({
@@ -31,31 +33,59 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>
 
-export function useCreateServiceDialog() {
+export function useCreateAppServiceDialog() {
   const { open } = useDialog()
 
-  return (
-    projectName: string,
-    onServiceCreated: (serviceName: string) => void
-  ) => {
+  return (projectName: string, onServiceCreated: ServiceCreatedCallback) => {
     open(
-      <Content projectName={projectName} onServiceCreated={onServiceCreated} />
+      <Content
+        serviceType="app"
+        projectName={projectName}
+        mutationFn={createAppService}
+        onServiceCreated={onServiceCreated}
+      />
+    )
+  }
+}
+
+export function useCreatePostgresServiceDialog() {
+  const { open } = useDialog()
+
+  return (projectName: string, onServiceCreated: ServiceCreatedCallback) => {
+    open(
+      <Content
+        serviceType="postgres"
+        projectName={projectName}
+        mutationFn={createPostgresService}
+        onServiceCreated={onServiceCreated}
+      />
     )
   }
 }
 
 interface ContentProps {
+  serviceType: ServiceType
   projectName: string
-  onServiceCreated: (serviceName: string) => void
+  mutationFn: (projectName: string, serviceName: string) => Promise<void>
+  onServiceCreated: ServiceCreatedCallback
 }
 
-function Content({ projectName, onServiceCreated }: ContentProps) {
+function Content({
+  mutationFn,
+  serviceType,
+  projectName,
+  onServiceCreated,
+}: ContentProps) {
   const { close } = useDialog()
 
-  const { mutate, isPending } = useCreateService((serviceName) => {
-    close()
-    onServiceCreated(serviceName)
-  })
+  const { mutate, isPending } = useCreateService(
+    serviceType,
+    mutationFn,
+    (serviceName) => {
+      close()
+      onServiceCreated(serviceName)
+    }
+  )
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -68,9 +98,10 @@ function Content({ projectName, onServiceCreated }: ContentProps) {
   return (
     <DialogContent className="sm:max-w-md">
       <DialogHeader>
-        <DialogTitle>Add service</DialogTitle>
+        <DialogTitle>Add {serviceType} service</DialogTitle>
         <DialogDescription>
-          Create a new service in the <strong>{projectName}</strong> project.
+          Create a new {serviceType} service in the{" "}
+          <strong>{projectName}</strong> project.
         </DialogDescription>
       </DialogHeader>
       <form
@@ -83,7 +114,7 @@ function Content({ projectName, onServiceCreated }: ContentProps) {
             control={form.control}
             name="name"
             label="Service name"
-            placeholder="web"
+            placeholder={`my-${serviceType}-service`}
             autoComplete="off"
             autoFocus
           />

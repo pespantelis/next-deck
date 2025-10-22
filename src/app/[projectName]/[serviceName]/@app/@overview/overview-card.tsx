@@ -6,10 +6,7 @@ import {
   HatGlassesIcon,
   LinkIcon,
   PencilIcon,
-  PlayIcon,
-  RefreshCwIcon,
   ServerIcon,
-  SquareIcon,
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -23,19 +20,12 @@ import {
   ListCardItems,
   ListCardTitle,
 } from "@/components/list-card"
-import { StatusIcon, StatusText } from "@/components/status"
+import { OverviewStatus } from "@/components/overview-status"
 import { ItemDescription, ItemMedia, ItemTitle } from "@/components/ui/item"
-import { Spinner } from "@/components/ui/spinner"
 import { Switch } from "@/components/ui/switch"
 
 import { useEditPortDialog } from "./edit-port-dialog"
-import {
-  useOverview,
-  useRestartService,
-  useStartService,
-  useStopService,
-  useToggleVisibility,
-} from "./hooks"
+import { useOverview, useToggleVisibility } from "./hooks"
 
 interface OverviewCardProps {
   projectName: string
@@ -58,10 +48,6 @@ export function OverviewCard({
   const toggleVisibility = useToggleVisibility(projectName, serviceName)
   const editPortDialog = useEditPortDialog(projectName, serviceName)
 
-  const startService = useStartService(projectName, serviceName)
-  const stopService = useStopService(projectName, serviceName)
-  const restartService = useRestartService(projectName, serviceName)
-
   const internalEndpoint = `http://${overview.alias}:${overview.port}`
 
   const copyInternalEndpoint = async () => {
@@ -73,9 +59,6 @@ export function OverviewCard({
     }
   }
 
-  const disabled =
-    startService.isPending || stopService.isPending || restartService.isPending
-
   return (
     <ListCard>
       <ListCardHeader>
@@ -83,51 +66,13 @@ export function OverviewCard({
       </ListCardHeader>
 
       <ListCardItems>
-        <ListCardItem>
-          <ItemMedia variant="icon" className="size-10">
-            <StatusIcon
-              running={overview.running}
-              deployed={overview.deployed}
-            />
-          </ItemMedia>
-          <ListCardItemContent>
-            <ItemTitle>Status</ItemTitle>
-            <ItemDescription>
-              <StatusText
-                running={overview.running}
-                deployed={overview.deployed}
-              />
-            </ItemDescription>
-          </ListCardItemContent>
-          <ListCardItemActions>
-            {!overview.running ? (
-              <ListCardItemAction
-                onClick={() => startService.mutate()}
-                disabled={disabled}
-                className="text-green-500"
-              >
-                {startService.isPending ? <Spinner /> : <PlayIcon />}
-              </ListCardItemAction>
-            ) : (
-              <>
-                <ListCardItemAction
-                  onClick={() => stopService.mutate()}
-                  disabled={disabled}
-                  className="text-red-500"
-                >
-                  {stopService.isPending ? <Spinner /> : <SquareIcon />}
-                </ListCardItemAction>
-                <ListCardItemAction
-                  onClick={() => restartService.mutate()}
-                  disabled={disabled}
-                  className="text-sky-500"
-                >
-                  {restartService.isPending ? <Spinner /> : <RefreshCwIcon />}
-                </ListCardItemAction>
-              </>
-            )}
-          </ListCardItemActions>
-        </ListCardItem>
+        <OverviewStatus
+          type="app"
+          projectName={projectName}
+          serviceName={serviceName}
+          running={overview.running}
+          deployed={overview.deployed}
+        />
 
         <ListCardItem>
           <ItemMedia variant="icon" className="size-10">

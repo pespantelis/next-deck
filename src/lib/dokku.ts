@@ -68,6 +68,27 @@ export const dokku = {
     active: (app: string) => read(`letsencrypt:active ${app}`),
     enable: (app: string) => write(`letsencrypt:enable ${app}`),
   },
+  postgres: {
+    create: (name: string, network: string) =>
+      write(`postgres:create ${name} -P ${network}`),
+    destroy: (name: string) => write(`postgres:destroy ${name}`),
+    exists: (name: string) => read(`postgres:exists ${name}`),
+    info: {
+      status: (name: string) => read(`postgres:info ${name} --status`),
+      dsn: (name: string) => read(`postgres:info ${name} --dsn`),
+    },
+    link: (service: string, app: string) =>
+      write(`postgres:link ${service} ${app}`),
+    linked: (service: string, app: string) =>
+      read(`postgres:linked ${service} ${app}`),
+    links: (service: string) => read(`postgres:links ${service}`),
+    list: () => read("postgres:list"),
+    restart: (name: string) => write(`postgres:restart ${name}`),
+    start: (name: string) => write(`postgres:start ${name}`),
+    stop: (name: string) => write(`postgres:stop ${name}`),
+    unlink: (service: string, app: string) =>
+      write(`postgres:unlink ${service} ${app}`),
+  },
   proxy: {
     disable: (app: string) => write(`proxy:disable ${app}`),
     enable: (app: string) => write(`proxy:enable ${app}`),
