@@ -73,9 +73,14 @@ export const dokku = {
       write(`postgres:create ${name} -P ${network}`),
     destroy: (name: string) => write(`postgres:destroy ${name}`),
     exists: (name: string) => read(`postgres:exists ${name}`),
+    expose: (name: string, port: string) =>
+      write(`postgres:expose ${name} ${port}`),
+    unexpose: (name: string) => write(`postgres:unexpose ${name}`),
     info: {
       status: (name: string) => read(`postgres:info ${name} --status`),
       dsn: (name: string) => read(`postgres:info ${name} --dsn`),
+      exposedPorts: (name: string) =>
+        read(`postgres:info ${name} --exposed-ports`),
     },
     link: (service: string, app: string) =>
       write(`postgres:link ${service} ${app}`),
