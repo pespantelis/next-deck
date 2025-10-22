@@ -12,4 +12,9 @@ export interface Service {
   deployed: boolean
 }
 
+export interface ServiceIdentifier {
+  projectName: string
+  serviceName: string
+}
+
 export type ServiceCreatedCallback = (serviceName: string) => void

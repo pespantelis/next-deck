@@ -19,17 +19,17 @@ import { ItemTitle } from "@/components/ui/item"
 import { useVolumes } from "./hooks"
 import { useUnmountVolumeAlertDialog } from "./unmount-volume-dialog"
 
-interface VolumesListCardProps {
+interface VolumesCardProps {
   projectName: string
   serviceName: string
   initialData: Record<string, string>
 }
 
-export function VolumesListCard({
+export function VolumesCard({
   projectName,
   serviceName,
   initialData,
-}: VolumesListCardProps) {
+}: VolumesCardProps) {
   const { data: volumes = {} } = useVolumes(
     projectName,
     serviceName,

@@ -1,36 +1,33 @@
 import { Suspense } from "react"
 
 import { ListCardSkeleton } from "@/components/list-card"
+import type { ServiceIdentifier } from "@/types"
 
-interface AppLayoutProps {
-  overview: React.ReactNode
-  environment: React.ReactNode
-  domains: React.ReactNode
-  volumes: React.ReactNode
-}
+import Domains from "./domains"
+import Environment from "./environment"
+import Overview from "./overview"
+import Volumes from "./volumes"
 
-export default function AppLayout({
-  overview,
-  environment,
-  domains,
-  volumes,
-}: AppLayoutProps) {
+export default function AppServices({
+  projectName,
+  serviceName,
+}: ServiceIdentifier) {
   return (
     <div className="grid gap-4 p-8 md:grid-cols-2">
       <div className="flex flex-col gap-4">
         <Suspense fallback={<ListCardSkeleton count={4} className="h-17.5" />}>
-          {overview}
+          <Overview projectName={projectName} serviceName={serviceName} />
         </Suspense>
         <Suspense fallback={<ListCardSkeleton count={1} showAction />}>
-          {volumes}
+          <Volumes projectName={projectName} serviceName={serviceName} />
         </Suspense>
       </div>
       <div className="flex flex-col gap-4">
         <Suspense fallback={<ListCardSkeleton count={1} showAction />}>
-          {domains}
+          <Domains projectName={projectName} serviceName={serviceName} />
         </Suspense>
         <Suspense fallback={<ListCardSkeleton count={4} showAction />}>
-          {environment}
+          <Environment projectName={projectName} serviceName={serviceName} />
         </Suspense>
       </div>
     </div>

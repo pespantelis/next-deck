@@ -28,17 +28,17 @@ import { useDeleteEnvironmentVariableAlertDialog } from "./delete-environment-va
 import { useEnvironmentVariables, useImportEnvironmentVariables } from "./hooks"
 import { useSaveEnvironmentVariableDialog } from "./save-environment-variable-dialog"
 
-interface EnvironmentListCardProps {
+interface EnvironmentCardProps {
   projectName: string
   serviceName: string
   initialData: Record<string, string>
 }
 
-export function EnvironmentListCard({
+export function EnvironmentCard({
   projectName,
   serviceName,
   initialData,
-}: EnvironmentListCardProps) {
+}: EnvironmentCardProps) {
   const { data: environment = {} } = useEnvironmentVariables(
     projectName,
     serviceName,

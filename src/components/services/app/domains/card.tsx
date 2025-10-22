@@ -28,17 +28,17 @@ import { useAddDomainDialog } from "./add-domain-dialog"
 import { useDeleteDomainAlertDialog } from "./delete-domain-dialog"
 import { useDomains, useEnableLetsEncrypt } from "./hooks"
 
-interface DomainsListCardProps {
+interface DomainsCardProps {
   projectName: string
   serviceName: string
   initialData: { domains: string[]; letsencrypt: boolean }
 }
 
-export function DomainsListCard({
+export function DomainsCard({
   projectName,
   serviceName,
   initialData,
-}: DomainsListCardProps) {
+}: DomainsCardProps) {
   const { data: info = { domains: [], letsencrypt: false } } = useDomains(
     projectName,
     serviceName,
