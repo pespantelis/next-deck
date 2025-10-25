@@ -1,11 +1,16 @@
 "use server"
 
 import { dokku } from "@/lib/dokku"
+import type { DatabaseType } from "@/types"
 
-async function getLinkedApps(projectName: string, serviceName: string) {
-  const postgresName = `${projectName}-${serviceName}`
+async function getLinkedApps(
+  projectName: string,
+  serviceName: string,
+  dbType: DatabaseType
+) {
+  const fullServiceName = `${projectName}-${serviceName}`
 
-  const links = await dokku.postgres.links(postgresName)
+  const links = await dokku[dbType].links(fullServiceName)
 
   return links.split("\n").filter(Boolean)
 }
@@ -19,9 +24,13 @@ async function getAvailableApps(projectName: string) {
     .filter((app) => app.startsWith(`${projectName}-`))
 }
 
-export async function getLinks(projectName: string, serviceName: string) {
+export async function getLinks(
+  projectName: string,
+  serviceName: string,
+  dbType: DatabaseType
+) {
   const [linkedApps, availableApps] = await Promise.all([
-    getLinkedApps(projectName, serviceName),
+    getLinkedApps(projectName, serviceName, dbType),
     getAvailableApps(projectName),
   ])
 
@@ -50,24 +59,25 @@ export async function getLinks(projectName: string, serviceName: string) {
   })
 }
 
-export async function togglePostgresLink(
+export async function toggleDatabaseLink(
   projectName: string,
   serviceName: string,
-  appName: string
+  appName: string,
+  dbType: DatabaseType
 ): Promise<{ linked: boolean }> {
-  const postgresName = `${projectName}-${serviceName}`
+  const fullServiceName = `${projectName}-${serviceName}`
   const fullAppName = `${projectName}-${appName}`
 
-  const output = await dokku.postgres.linked(postgresName, fullAppName)
+  const output = await dokku[dbType].linked(fullServiceName, fullAppName)
 
   if (output.includes("is linked")) {
-    await dokku.postgres.unlink(postgresName, fullAppName)
+    await dokku[dbType].unlink(fullServiceName, fullAppName)
     return {
       linked: false,
     }
   }
 
-  await dokku.postgres.link(postgresName, fullAppName)
+  await dokku[dbType].link(fullServiceName, fullAppName)
   return {
     linked: true,
   }

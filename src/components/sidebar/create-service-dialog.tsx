@@ -17,7 +17,11 @@ import {
 import { FieldGroup } from "@/components/ui/field"
 import type { ServiceCreatedCallback, ServiceType } from "@/types"
 
-import { createAppService, createPostgresService } from "./actions"
+import {
+  createAppService,
+  createMongoService,
+  createPostgresService,
+} from "./actions"
 import { useCreateService } from "./hooks"
 
 const formSchema = z.object({
@@ -57,6 +61,21 @@ export function useCreatePostgresServiceDialog() {
         serviceType="postgres"
         projectName={projectName}
         mutationFn={createPostgresService}
+        onServiceCreated={onServiceCreated}
+      />
+    )
+  }
+}
+
+export function useCreateMongoServiceDialog() {
+  const { open } = useDialog()
+
+  return (projectName: string, onServiceCreated: ServiceCreatedCallback) => {
+    open(
+      <Content
+        serviceType="mongo"
+        projectName={projectName}
+        mutationFn={createMongoService}
         onServiceCreated={onServiceCreated}
       />
     )

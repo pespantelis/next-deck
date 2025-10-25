@@ -94,6 +94,32 @@ export const dokku = {
     unlink: (service: string, app: string) =>
       write(`postgres:unlink ${service} ${app}`),
   },
+  mongo: {
+    create: (name: string, network: string) =>
+      write(`mongo:create ${name} -P ${network}`),
+    destroy: (name: string) => write(`mongo:destroy ${name}`),
+    exists: (name: string) => read(`mongo:exists ${name}`),
+    expose: (name: string, port: string) =>
+      write(`mongo:expose ${name} ${port}`),
+    unexpose: (name: string) => write(`mongo:unexpose ${name}`),
+    info: {
+      status: (name: string) => read(`mongo:info ${name} --status`),
+      dsn: (name: string) => read(`mongo:info ${name} --dsn`),
+      exposedPorts: (name: string) =>
+        read(`mongo:info ${name} --exposed-ports`),
+    },
+    link: (service: string, app: string) =>
+      write(`mongo:link ${service} ${app}`),
+    linked: (service: string, app: string) =>
+      read(`mongo:linked ${service} ${app}`),
+    links: (service: string) => read(`mongo:links ${service}`),
+    list: () => read("mongo:list"),
+    restart: (name: string) => write(`mongo:restart ${name}`),
+    start: (name: string) => write(`mongo:start ${name}`),
+    stop: (name: string) => write(`mongo:stop ${name}`),
+    unlink: (service: string, app: string) =>
+      write(`mongo:unlink ${service} ${app}`),
+  },
   proxy: {
     disable: (app: string) => write(`proxy:disable ${app}`),
     enable: (app: string) => write(`proxy:enable ${app}`),

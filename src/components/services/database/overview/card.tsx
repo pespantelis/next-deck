@@ -22,12 +22,14 @@ import {
 import { OverviewStatus } from "@/components/overview-status"
 import { ItemDescription, ItemMedia, ItemTitle } from "@/components/ui/item"
 import { Spinner } from "@/components/ui/spinner"
+import type { DatabaseType } from "@/types"
 
 import { useOverview, useToggleExpose } from "./hooks"
 
 interface OverviewCardProps {
   projectName: string
   serviceName: string
+  dbType: DatabaseType
   initialData: {
     dsn: string
     exposed: string | null
@@ -39,10 +41,15 @@ interface OverviewCardProps {
 export function OverviewCard({
   projectName,
   serviceName,
+  dbType,
   initialData,
 }: OverviewCardProps) {
-  const { data: overview = initialData } = useOverview(projectName, serviceName)
-  const toggleExpose = useToggleExpose(projectName, serviceName)
+  const { data: overview = initialData } = useOverview(
+    projectName,
+    serviceName,
+    dbType
+  )
+  const toggleExpose = useToggleExpose(projectName, serviceName, dbType)
 
   const copyConnectionString = async () => {
     try {
@@ -61,7 +68,7 @@ export function OverviewCard({
 
       <ListCardItems>
         <OverviewStatus
-          type="postgres"
+          type={dbType}
           projectName={projectName}
           serviceName={serviceName}
           running={overview.running}

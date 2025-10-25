@@ -15,8 +15,9 @@ import {
 } from "@/components/list-card"
 import { ItemMedia, ItemTitle } from "@/components/ui/item"
 import { Spinner } from "@/components/ui/spinner"
+import type { DatabaseType } from "@/types"
 
-import { usePostgresLinks, useTogglePostgresLink } from "./hooks"
+import { useDatabaseLinks, useToggleDatabaseLink } from "./hooks"
 
 interface LinkWithStatus {
   name: string
@@ -26,20 +27,27 @@ interface LinkWithStatus {
 interface LinksCardProps {
   projectName: string
   serviceName: string
+  dbType: DatabaseType
   initialLinksWithStatus: LinkWithStatus[]
 }
 
 export function LinksCard({
   projectName,
   serviceName,
+  dbType,
   initialLinksWithStatus,
 }: LinksCardProps) {
-  const { data: linksWithStatus } = usePostgresLinks({
+  const { data: linksWithStatus } = useDatabaseLinks({
     projectName,
     serviceName,
+    dbType,
     initialLinksWithStatus,
   })
-  const toggleLinkMutation = useTogglePostgresLink(projectName, serviceName)
+  const toggleLinkMutation = useToggleDatabaseLink(
+    projectName,
+    serviceName,
+    dbType
+  )
 
   return (
     <ListCard>

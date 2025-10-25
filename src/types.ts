@@ -3,7 +3,8 @@ export interface Project {
   services: Service[]
 }
 
-export type ServiceType = "app" | "postgres"
+export type ServiceType = "app" | "postgres" | "mongo"
+export type DatabaseType = "postgres" | "mongo"
 
 export interface Service {
   type: ServiceType

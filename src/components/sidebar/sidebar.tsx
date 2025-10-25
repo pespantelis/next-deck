@@ -28,6 +28,7 @@ import { Button } from "../ui/button"
 import { useCreateProjectDialog } from "./create-project-dialog"
 import {
   useCreateAppServiceDialog,
+  useCreateMongoServiceDialog,
   useCreatePostgresServiceDialog,
 } from "./create-service-dialog"
 import { useProjects } from "./hooks"
@@ -49,6 +50,7 @@ function DeckSidebarGroup({ project }: { project: Project }) {
   const pathname = usePathname()
   const openCreateAppServiceDialog = useCreateAppServiceDialog()
   const openCreatePostgresServiceDialog = useCreatePostgresServiceDialog()
+  const openCreateMongoServiceDialog = useCreateMongoServiceDialog()
 
   const navigateToService = (serviceName: string) => {
     router.push(`/${project.name}/${serviceName}`)
@@ -78,6 +80,13 @@ function DeckSidebarGroup({ project }: { project: Project }) {
             }
           >
             Postgres
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() =>
+              openCreateMongoServiceDialog(project.name, navigateToService)
+            }
+          >
+            Mongo
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -33,17 +33,29 @@ export async function createPostgresService(
   return dokku.postgres.create(postgresName, networkName)
 }
 
+export async function createMongoService(
+  projectName: string,
+  serviceName: string
+): Promise<void> {
+  const mongoName = `${projectName}-${serviceName}`
+  const networkName = `${projectName}-network`
+
+  return dokku.mongo.create(mongoName, networkName)
+}
+
 export async function getProjects(): Promise<Project[]> {
   const [
     networksOutput,
     appsOutput,
     postgresOutput,
+    mongoOutput,
     appsRunningOutput,
     appsDeployedOutput,
   ] = await Promise.all([
     dokku.network.list(),
     dokku.apps.list(),
     dokku.postgres.list(),
+    dokku.mongo.list(),
     dokku.ps.report.running(),
     dokku.ps.report.deployed(),
   ])
@@ -57,13 +69,15 @@ export async function getProjects(): Promise<Project[]> {
     .sort()
   const appServices = appsOutput.split("\n").slice(1)
   const postgresServices = postgresOutput.split("\n").slice(1)
+  const mongoServices = mongoOutput.split("\n").slice(1)
   const appsRunning = appsRunningOutput.split("\n")
   const appsDeployed = appsDeployedOutput.split("\n")
 
-  // Get postgres statuses in parallel
-  const postgresStatuses = await Promise.all(
-    postgresServices.map((srv) => dokku.postgres.info.status(srv))
-  )
+  // Get postgres and mongo statuses in parallel
+  const [postgresStatuses, mongoStatuses] = await Promise.all([
+    Promise.all(postgresServices.map((srv) => dokku.postgres.info.status(srv))),
+    Promise.all(mongoServices.map((srv) => dokku.mongo.info.status(srv))),
+  ])
 
   const projects: Record<string, Service[]> = Object.fromEntries(
     networks.map((project) => [project, []])
@@ -91,6 +105,19 @@ export async function getProjects(): Promise<Project[]> {
       type: "postgres",
       name: srv.slice(project.length + 1), // skip project-
       running: postgresStatuses[i] === "running",
+      deployed: true,
+    })
+  })
+
+  // Add mongo services
+  mongoServices.forEach((srv, i) => {
+    const project = networks.find((project) => srv.startsWith(project + "-"))
+    if (!project) return // ignore unknown project
+
+    projects[project].push({
+      type: "mongo",
+      name: srv.slice(project.length + 1), // skip project-
+      running: mongoStatuses[i] === "running",
       deployed: true,
     })
   })

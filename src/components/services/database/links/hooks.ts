@@ -3,44 +3,49 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
-import { getLinks, togglePostgresLink } from "./actions"
+import type { DatabaseType } from "@/types"
+
+import { getLinks, toggleDatabaseLink } from "./actions"
 
 interface LinkWithStatus {
   name: string
   isLinked: boolean
 }
 
-interface UsePostgresLinksProps {
+interface UseDatabaseLinksProps {
   projectName: string
   serviceName: string
+  dbType: DatabaseType
   initialLinksWithStatus: LinkWithStatus[]
 }
 
-export function usePostgresLinks({
+export function useDatabaseLinks({
   projectName,
   serviceName,
+  dbType,
   initialLinksWithStatus,
-}: UsePostgresLinksProps) {
+}: UseDatabaseLinksProps) {
   return useQuery({
-    queryKey: ["postgres-links", projectName, serviceName],
-    queryFn: () => getLinks(projectName, serviceName),
+    queryKey: [`${dbType}-links`, projectName, serviceName],
+    queryFn: () => getLinks(projectName, serviceName, dbType),
     initialData: initialLinksWithStatus,
     staleTime: 30 * 1000, // 30 seconds
   })
 }
 
-export function useTogglePostgresLink(
+export function useToggleDatabaseLink(
   projectName: string,
-  serviceName: string
+  serviceName: string,
+  dbType: DatabaseType
 ) {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: (linkName: string) =>
-      togglePostgresLink(projectName, serviceName, linkName),
+      toggleDatabaseLink(projectName, serviceName, linkName, dbType),
     onSuccess: async ({ linked }) => {
       await queryClient.invalidateQueries({
-        queryKey: ["postgres-links", projectName, serviceName],
+        queryKey: [`${dbType}-links`, projectName, serviceName],
       })
       toast.success(
         linked
