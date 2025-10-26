@@ -27,11 +27,12 @@ import { Spinner } from "@/components/ui/spinner"
 import { useDeleteEnvironmentVariableAlertDialog } from "./delete-environment-variable-dialog"
 import { useEnvironmentVariables, useImportEnvironmentVariables } from "./hooks"
 import { useSaveEnvironmentVariableDialog } from "./save-environment-variable-dialog"
+import type { Data } from "./types"
 
 interface EnvironmentCardProps {
   projectName: string
   serviceName: string
-  initialData: Record<string, string>
+  initialData: Data
 }
 
 export function EnvironmentCard({
@@ -39,7 +40,7 @@ export function EnvironmentCard({
   serviceName,
   initialData,
 }: EnvironmentCardProps) {
-  const { data: environment = {} } = useEnvironmentVariables(
+  const { data } = useEnvironmentVariables(
     projectName,
     serviceName,
     initialData
@@ -62,7 +63,7 @@ export function EnvironmentCard({
     return importFromClipboard(input)
   }, [importFromClipboard])
 
-  const items = Object.entries(environment)
+  const items = Object.entries(data)
 
   return (
     <ListCard>

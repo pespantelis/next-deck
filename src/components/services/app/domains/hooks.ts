@@ -7,6 +7,7 @@ import {
   enableLetsEncrypt,
   getDomains,
 } from "./actions"
+import type { Data } from "./types"
 
 const buildKey = (projectName: string, serviceName: string) =>
   ["service", projectName, serviceName, "domains"] as const
@@ -14,7 +15,7 @@ const buildKey = (projectName: string, serviceName: string) =>
 export function useDomains(
   projectName: string,
   serviceName: string,
-  initialData?: { domains: string[]; letsencrypt: boolean }
+  initialData: Data
 ) {
   return useQuery({
     queryKey: buildKey(projectName, serviceName),

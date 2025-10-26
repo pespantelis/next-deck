@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
 import { getVolumes, unmountVolume } from "./actions"
+import type { Data } from "./types"
 
 const buildKey = (projectName: string, serviceName: string) =>
   ["service", projectName, serviceName, "volumes"] as const
@@ -9,7 +10,7 @@ const buildKey = (projectName: string, serviceName: string) =>
 export function useVolumes(
   projectName: string,
   serviceName: string,
-  initialData?: Record<string, string>
+  initialData: Data
 ) {
   return useQuery({
     queryKey: buildKey(projectName, serviceName),

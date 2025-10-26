@@ -17,12 +17,13 @@ import {
 import { ItemTitle } from "@/components/ui/item"
 
 import { useVolumes } from "./hooks"
+import type { Data } from "./types"
 import { useUnmountVolumeAlertDialog } from "./unmount-volume-dialog"
 
 interface VolumesCardProps {
   projectName: string
   serviceName: string
-  initialData: Record<string, string>
+  initialData: Data
 }
 
 export function VolumesCard({
@@ -30,17 +31,13 @@ export function VolumesCard({
   serviceName,
   initialData,
 }: VolumesCardProps) {
-  const { data: volumes = {} } = useVolumes(
-    projectName,
-    serviceName,
-    initialData
-  )
+  const { data } = useVolumes(projectName, serviceName, initialData)
   const openUnmountDialog = useUnmountVolumeAlertDialog(
     projectName,
     serviceName
   )
 
-  const items = Object.entries(volumes)
+  const items = Object.entries(data)
 
   return (
     <ListCard>

@@ -6,15 +6,18 @@ import { toast } from "sonner"
 import type { DatabaseType } from "@/types"
 
 import { getOverview, toggleExpose } from "./actions"
+import type { Data } from "./types"
 
 export function useOverview(
   projectName: string,
   serviceName: string,
-  dbType: DatabaseType
+  dbType: DatabaseType,
+  initialData: Data
 ) {
   return useQuery({
     queryKey: ["overview", dbType, projectName, serviceName],
     queryFn: () => getOverview(projectName, serviceName, dbType),
+    initialData,
     staleTime: 30000, // 30 seconds
   })
 }

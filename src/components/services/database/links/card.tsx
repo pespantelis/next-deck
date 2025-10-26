@@ -18,30 +18,26 @@ import { Spinner } from "@/components/ui/spinner"
 import type { DatabaseType } from "@/types"
 
 import { useDatabaseLinks, useToggleDatabaseLink } from "./hooks"
-
-interface LinkWithStatus {
-  name: string
-  isLinked: boolean
-}
+import type { Data } from "./types"
 
 interface LinksCardProps {
   projectName: string
   serviceName: string
   dbType: DatabaseType
-  initialLinksWithStatus: LinkWithStatus[]
+  initialData: Data[]
 }
 
 export function LinksCard({
   projectName,
   serviceName,
   dbType,
-  initialLinksWithStatus,
+  initialData,
 }: LinksCardProps) {
-  const { data: linksWithStatus } = useDatabaseLinks({
+  const { data } = useDatabaseLinks({
     projectName,
     serviceName,
     dbType,
-    initialLinksWithStatus,
+    initialData,
   })
   const toggleLinkMutation = useToggleDatabaseLink(
     projectName,
@@ -55,11 +51,11 @@ export function LinksCard({
         <ListCardTitle>Links</ListCardTitle>
       </ListCardHeader>
 
-      {linksWithStatus.length === 0 ? (
+      {data.length === 0 ? (
         <ListCardEmpty>No links configured</ListCardEmpty>
       ) : (
         <ListCardItems>
-          {linksWithStatus.map((link) => (
+          {data.map((link) => (
             <ListCardItem key={link.name}>
               <ItemMedia variant="icon">
                 {link.isLinked ? (

@@ -3,6 +3,8 @@
 import { dokku } from "@/lib/dokku"
 import type { DatabaseType } from "@/types"
 
+import type { Data } from "./types"
+
 async function getLinkedApps(
   projectName: string,
   serviceName: string,
@@ -28,7 +30,7 @@ export async function getLinks(
   projectName: string,
   serviceName: string,
   dbType: DatabaseType
-) {
+): Promise<Data[]> {
   const [linkedApps, availableApps] = await Promise.all([
     getLinkedApps(projectName, serviceName, dbType),
     getAvailableApps(projectName),

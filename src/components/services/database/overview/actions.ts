@@ -3,11 +3,13 @@
 import { dokku } from "@/lib/dokku"
 import type { DatabaseType } from "@/types"
 
+import type { Data } from "./types"
+
 export async function getOverview(
   projectName: string,
   serviceName: string,
   dbType: DatabaseType
-) {
+): Promise<Data> {
   const appName = `${projectName}-${serviceName}`
   const [dsn, status, exposedPorts] = await Promise.all([
     dokku[dbType].info.dsn(appName),

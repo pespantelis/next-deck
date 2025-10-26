@@ -6,29 +6,25 @@ import { toast } from "sonner"
 import type { DatabaseType } from "@/types"
 
 import { getLinks, toggleDatabaseLink } from "./actions"
-
-interface LinkWithStatus {
-  name: string
-  isLinked: boolean
-}
+import type { Data } from "./types"
 
 interface UseDatabaseLinksProps {
   projectName: string
   serviceName: string
   dbType: DatabaseType
-  initialLinksWithStatus: LinkWithStatus[]
+  initialData: Data[]
 }
 
 export function useDatabaseLinks({
   projectName,
   serviceName,
   dbType,
-  initialLinksWithStatus,
+  initialData,
 }: UseDatabaseLinksProps) {
   return useQuery({
     queryKey: [`${dbType}-links`, projectName, serviceName],
     queryFn: () => getLinks(projectName, serviceName, dbType),
-    initialData: initialLinksWithStatus,
+    initialData,
     staleTime: 30 * 1000, // 30 seconds
   })
 }

@@ -8,11 +8,17 @@ import {
   toggleServiceVisibility,
   updateServicePort,
 } from "./actions"
+import type { Data } from "./types"
 
-export function useOverview(projectName: string, serviceName: string) {
+export function useOverview(
+  projectName: string,
+  serviceName: string,
+  initialData: Data
+) {
   return useQuery({
     queryKey: ["overview", "app", projectName, serviceName],
     queryFn: () => getOverview(projectName, serviceName),
+    initialData,
     staleTime: 30000, // 30 seconds
   })
 }

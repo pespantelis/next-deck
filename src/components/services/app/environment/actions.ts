@@ -3,11 +3,12 @@
 import { dokku } from "@/lib/dokku"
 
 import { parseEnvText, validateKey } from "./helpers"
+import type { Data } from "./types"
 
 export async function getEnvironmentVariables(
   projectName: string,
   serviceName: string
-): Promise<Record<string, string>> {
+): Promise<Data> {
   const appName = `${projectName}-${serviceName}`
   const output = await dokku.config.export(appName)
 

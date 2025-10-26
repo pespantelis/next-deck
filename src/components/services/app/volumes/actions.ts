@@ -2,10 +2,12 @@
 
 import { dokku } from "@/lib/dokku"
 
+import type { Data } from "./types"
+
 export async function getVolumes(
   projectName: string,
   serviceName: string
-): Promise<Record<string, string>> {
+): Promise<Data> {
   const appName = `${projectName}-${serviceName}`
   const output = await dokku.storage.list(appName)
   const lines = output.split("\n").filter(Boolean)

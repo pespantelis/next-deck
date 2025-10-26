@@ -25,17 +25,13 @@ import { Spinner } from "@/components/ui/spinner"
 import type { DatabaseType } from "@/types"
 
 import { useOverview, useToggleExpose } from "./hooks"
+import type { Data } from "./types"
 
 interface OverviewCardProps {
   projectName: string
   serviceName: string
   dbType: DatabaseType
-  initialData: {
-    dsn: string
-    exposed: string | null
-    running: boolean
-    deployed: boolean
-  }
+  initialData: Data
 }
 
 export function OverviewCard({
@@ -44,16 +40,12 @@ export function OverviewCard({
   dbType,
   initialData,
 }: OverviewCardProps) {
-  const { data: overview = initialData } = useOverview(
-    projectName,
-    serviceName,
-    dbType
-  )
+  const { data } = useOverview(projectName, serviceName, dbType, initialData)
   const toggleExpose = useToggleExpose(projectName, serviceName, dbType)
 
   const copyConnectionString = async () => {
     try {
-      await navigator.clipboard.writeText(overview.dsn)
+      await navigator.clipboard.writeText(data.dsn)
       toast.success("Connection string copied to clipboard.")
     } catch {
       toast.error("Failed to copy connection string.")
@@ -71,20 +63,20 @@ export function OverviewCard({
           type={dbType}
           projectName={projectName}
           serviceName={serviceName}
-          running={overview.running}
-          deployed={overview.deployed}
+          running={data.running}
+          deployed={data.deployed}
         />
 
         <ListCardItem>
           <ItemMedia variant="icon" className="size-10">
             <NetworkIcon
-              className={overview.exposed ? "text-yellow-500" : undefined}
+              className={data.exposed ? "text-yellow-500" : undefined}
             />
           </ItemMedia>
           <ListCardItemContent>
             <ItemTitle>Network access</ItemTitle>
             <ItemDescription>
-              {overview.exposed || "Not accessible"}
+              {data.exposed || "Not accessible"}
             </ItemDescription>
           </ListCardItemContent>
           <ListCardItemActions>
@@ -94,7 +86,7 @@ export function OverviewCard({
             >
               {toggleExpose.isPending ? (
                 <Spinner />
-              ) : overview.exposed ? (
+              ) : data.exposed ? (
                 <XIcon />
               ) : (
                 <ArrowUpRightIcon />
@@ -110,9 +102,7 @@ export function OverviewCard({
           <ListCardItemContent>
             <ItemTitle>Connection string</ItemTitle>
             <ItemDescription className="flex w-full">
-              <span className="truncate">
-                {overview.dsn || "Not available"}
-              </span>
+              <span className="truncate">{data.dsn || "Not available"}</span>
             </ItemDescription>
           </ListCardItemContent>
           <ListCardItemActions>

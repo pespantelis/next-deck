@@ -2,10 +2,12 @@
 
 import { dokku } from "@/lib/dokku"
 
+import type { Data } from "./types"
+
 export async function getDomains(
   projectName: string,
   serviceName: string
-): Promise<{ domains: string[]; letsencrypt: boolean }> {
+): Promise<Data> {
   const appName = `${projectName}-${serviceName}`
   const [domainsOutput, letsencryptOutput] = await Promise.all([
     dokku.domains.report(appName),

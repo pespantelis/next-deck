@@ -19,7 +19,7 @@ export default async function Links({
       projectName={projectName}
       serviceName={serviceName}
       dbType={dbType}
-      initialLinksWithStatus={linksWithStatus}
+      initialData={linksWithStatus}
     />
   )
 }

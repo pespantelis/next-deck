@@ -27,11 +27,12 @@ import { Spinner } from "@/components/ui/spinner"
 import { useAddDomainDialog } from "./add-domain-dialog"
 import { useDeleteDomainAlertDialog } from "./delete-domain-dialog"
 import { useDomains, useEnableLetsEncrypt } from "./hooks"
+import type { Data } from "./types"
 
 interface DomainsCardProps {
   projectName: string
   serviceName: string
-  initialData: { domains: string[]; letsencrypt: boolean }
+  initialData: Data
 }
 
 export function DomainsCard({
@@ -39,11 +40,7 @@ export function DomainsCard({
   serviceName,
   initialData,
 }: DomainsCardProps) {
-  const { data: info = { domains: [], letsencrypt: false } } = useDomains(
-    projectName,
-    serviceName,
-    initialData
-  )
+  const { data } = useDomains(projectName, serviceName, initialData)
   const openAddDialog = useAddDomainDialog(projectName, serviceName)
   const openDeleteDialog = useDeleteDomainAlertDialog(projectName, serviceName)
 
@@ -70,16 +67,16 @@ export function DomainsCard({
         </ButtonGroup>
       </ListCardHeader>
 
-      {info.domains.length === 0 && (
+      {data.domains.length === 0 && (
         <ListCardEmpty>No domains configured</ListCardEmpty>
       )}
 
-      {info.domains.length > 0 && (
+      {data.domains.length > 0 && (
         <ListCardItems>
-          {info.domains.map((domain) => (
+          {data.domains.map((domain) => (
             <ListCardItem key={domain}>
               <ItemMedia variant="icon">
-                {info.letsencrypt ? (
+                {data.letsencrypt ? (
                   <LockIcon className="text-blue-500" />
                 ) : (
                   <UnlockIcon className="text-yellow-500" />

@@ -2,7 +2,12 @@
 
 import { dokku } from "@/lib/dokku"
 
-export async function getOverview(projectName: string, serviceName: string) {
+import type { Data } from "./types"
+
+export async function getOverview(
+  projectName: string,
+  serviceName: string
+): Promise<Data> {
   const appName = `${projectName}-${serviceName}`
 
   const [port, proxyStatus, runningStatus, deployedStatus] = await Promise.all([

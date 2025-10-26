@@ -7,6 +7,7 @@ import {
   importEnvironmentVariables,
   setEnvironmentVariable,
 } from "./actions"
+import type { Data } from "./types"
 
 const buildKey = (projectName: string, serviceName: string) =>
   ["service", projectName, serviceName, "environment"] as const
@@ -14,7 +15,7 @@ const buildKey = (projectName: string, serviceName: string) =>
 export function useEnvironmentVariables(
   projectName: string,
   serviceName: string,
-  initialData?: Record<string, string>
+  initialData: Data
 ) {
   return useQuery({
     queryKey: buildKey(projectName, serviceName),

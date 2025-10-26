@@ -26,17 +26,12 @@ import { Switch } from "@/components/ui/switch"
 
 import { useEditPortDialog } from "./edit-port-dialog"
 import { useOverview, useToggleVisibility } from "./hooks"
+import type { Data } from "./types"
 
 interface OverviewCardProps {
   projectName: string
   serviceName: string
-  initialData: {
-    alias: string
-    port: string
-    isPublic: boolean
-    running: boolean
-    deployed: boolean
-  }
+  initialData: Data
 }
 
 export function OverviewCard({
@@ -44,11 +39,11 @@ export function OverviewCard({
   serviceName,
   initialData,
 }: OverviewCardProps) {
-  const { data: overview = initialData } = useOverview(projectName, serviceName)
+  const { data } = useOverview(projectName, serviceName, initialData)
   const toggleVisibility = useToggleVisibility(projectName, serviceName)
   const editPortDialog = useEditPortDialog(projectName, serviceName)
 
-  const internalEndpoint = `http://${overview.alias}:${overview.port}`
+  const internalEndpoint = `http://${data.alias}:${data.port}`
 
   const copyInternalEndpoint = async () => {
     try {
@@ -70,8 +65,8 @@ export function OverviewCard({
           type="app"
           projectName={projectName}
           serviceName={serviceName}
-          running={overview.running}
-          deployed={overview.deployed}
+          running={data.running}
+          deployed={data.deployed}
         />
 
         <ListCardItem>
@@ -80,11 +75,11 @@ export function OverviewCard({
           </ItemMedia>
           <ListCardItemContent>
             <ItemTitle>Container port</ItemTitle>
-            <ItemDescription>{overview.port || "-"}</ItemDescription>
+            <ItemDescription>{data.port || "-"}</ItemDescription>
           </ListCardItemContent>
           <ListCardItemActions>
             <ListCardItemAction
-              onClick={() => editPortDialog({ port: overview.port })}
+              onClick={() => editPortDialog({ port: data.port })}
             >
               <PencilIcon />
             </ListCardItemAction>
@@ -108,17 +103,17 @@ export function OverviewCard({
 
         <ListCardItem>
           <ItemMedia variant="icon" className="size-10">
-            {overview.isPublic ? <EarthIcon /> : <HatGlassesIcon />}
+            {data.isPublic ? <EarthIcon /> : <HatGlassesIcon />}
           </ItemMedia>
           <ListCardItemContent>
             <ItemTitle>Visibility</ItemTitle>
             <ItemDescription>
-              {overview.isPublic ? "Public" : "Private"}
+              {data.isPublic ? "Public" : "Private"}
             </ItemDescription>
           </ListCardItemContent>
           <ListCardItemActions>
             <Switch
-              checked={overview.isPublic}
+              checked={data.isPublic}
               onCheckedChange={() => toggleVisibility.mutate()}
               disabled={toggleVisibility.isPending}
               aria-label="Toggle service visibility"
