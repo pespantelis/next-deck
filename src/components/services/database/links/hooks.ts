@@ -22,7 +22,7 @@ export function useDatabaseLinks({
   initialData,
 }: UseDatabaseLinksProps) {
   return useQuery({
-    queryKey: [`${dbType}-links`, projectName, serviceName],
+    queryKey: ["links", projectName, serviceName],
     queryFn: () => getLinks(projectName, serviceName, dbType),
     initialData,
     staleTime: 30 * 1000, // 30 seconds
@@ -41,7 +41,7 @@ export function useToggleDatabaseLink(
       toggleDatabaseLink(projectName, serviceName, linkName, dbType),
     onSuccess: async ({ linked }) => {
       await queryClient.invalidateQueries({
-        queryKey: [`${dbType}-links`, projectName, serviceName],
+        queryKey: ["links", projectName, serviceName],
       })
       toast.success(
         linked

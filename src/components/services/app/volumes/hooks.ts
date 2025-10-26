@@ -4,16 +4,13 @@ import { toast } from "sonner"
 import { getVolumes, unmountVolume } from "./actions"
 import type { Data } from "./types"
 
-const buildKey = (projectName: string, serviceName: string) =>
-  ["service", projectName, serviceName, "volumes"] as const
-
 export function useVolumes(
   projectName: string,
   serviceName: string,
   initialData: Data
 ) {
   return useQuery({
-    queryKey: buildKey(projectName, serviceName),
+    queryKey: ["volumes", projectName, serviceName],
     queryFn: () => getVolumes(projectName, serviceName),
     initialData,
   })
@@ -31,7 +28,7 @@ export function useUnmountVolume(
       unmountVolume(projectName, serviceName, hostPath),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: buildKey(projectName, serviceName),
+        queryKey: ["volumes", projectName, serviceName],
       })
       onSuccess()
       toast.success("Volume unmounted successfully.")

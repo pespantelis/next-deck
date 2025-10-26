@@ -15,7 +15,7 @@ export function useOverview(
   initialData: Data
 ) {
   return useQuery({
-    queryKey: ["overview", dbType, projectName, serviceName],
+    queryKey: ["overview", projectName, serviceName],
     queryFn: () => getOverview(projectName, serviceName, dbType),
     initialData,
     staleTime: 30000, // 30 seconds
@@ -33,7 +33,7 @@ export function useToggleExpose(
     mutationFn: () => toggleExpose(projectName, serviceName, dbType),
     onSuccess: async (data) => {
       await queryClient.invalidateQueries({
-        queryKey: ["overview", dbType, projectName, serviceName],
+        queryKey: ["overview", projectName, serviceName],
       })
       toast.success(
         data.exposed

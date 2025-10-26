@@ -16,7 +16,7 @@ export function useOverview(
   initialData: Data
 ) {
   return useQuery({
-    queryKey: ["overview", "app", projectName, serviceName],
+    queryKey: ["overview", projectName, serviceName],
     queryFn: () => getOverview(projectName, serviceName),
     initialData,
     staleTime: 30000, // 30 seconds
@@ -30,7 +30,7 @@ export function useToggleVisibility(projectName: string, serviceName: string) {
     mutationFn: () => toggleServiceVisibility(projectName, serviceName),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ["overview", "app", projectName, serviceName],
+        queryKey: ["overview", projectName, serviceName],
       })
       toast.success("Service visibility toggled successfully.")
     },
@@ -49,7 +49,7 @@ export function useUpdatePort(
       updateServicePort(projectName, serviceName, port),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: ["overview", "app", projectName, serviceName],
+        queryKey: ["overview", projectName, serviceName],
       })
       onSuccess()
       toast.success("Port updated successfully.")

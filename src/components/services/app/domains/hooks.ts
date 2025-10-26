@@ -9,16 +9,13 @@ import {
 } from "./actions"
 import type { Data } from "./types"
 
-const buildKey = (projectName: string, serviceName: string) =>
-  ["service", projectName, serviceName, "domains"] as const
-
 export function useDomains(
   projectName: string,
   serviceName: string,
   initialData: Data
 ) {
   return useQuery({
-    queryKey: buildKey(projectName, serviceName),
+    queryKey: ["domains", projectName, serviceName],
     queryFn: () => getDomains(projectName, serviceName),
     initialData,
   })
@@ -35,7 +32,7 @@ export function useAddDomain(
     mutationFn: (domain: string) => addDomain(projectName, serviceName, domain),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: buildKey(projectName, serviceName),
+        queryKey: ["domains", projectName, serviceName],
       })
       onSuccess()
       toast.success("Domain added successfully.")
@@ -55,7 +52,7 @@ export function useDeleteDomain(
       deleteDomain(projectName, serviceName, domain),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: buildKey(projectName, serviceName),
+        queryKey: ["domains", projectName, serviceName],
       })
       onSuccess()
       toast.success("Domain deleted successfully.")
@@ -70,7 +67,7 @@ export function useEnableLetsEncrypt(projectName: string, serviceName: string) {
     mutationFn: () => enableLetsEncrypt(projectName, serviceName),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: buildKey(projectName, serviceName),
+        queryKey: ["domains", projectName, serviceName],
       })
       toast.success("Let's Encrypt enabled successfully.")
     },

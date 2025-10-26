@@ -9,16 +9,13 @@ import {
 } from "./actions"
 import type { Data } from "./types"
 
-const buildKey = (projectName: string, serviceName: string) =>
-  ["service", projectName, serviceName, "environment"] as const
-
 export function useEnvironmentVariables(
   projectName: string,
   serviceName: string,
   initialData: Data
 ) {
   return useQuery({
-    queryKey: buildKey(projectName, serviceName),
+    queryKey: ["environment", projectName, serviceName],
     queryFn: () => getEnvironmentVariables(projectName, serviceName),
     initialData,
   })
@@ -36,7 +33,7 @@ export function useSetEnvironmentVariable(
       setEnvironmentVariable(projectName, serviceName, key, value),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: buildKey(projectName, serviceName),
+        queryKey: ["environment", projectName, serviceName],
       })
       onSuccess()
       toast.success("Environment variable saved successfully.")
@@ -56,7 +53,7 @@ export function useDeleteEnvironmentVariable(
       deleteEnvironmentVariable(projectName, serviceName, key),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
-        queryKey: buildKey(projectName, serviceName),
+        queryKey: ["environment", projectName, serviceName],
       })
       onSuccess()
       toast.success("Environment variable deleted successfully.")
@@ -75,7 +72,7 @@ export function useImportEnvironmentVariables(
       importEnvironmentVariables(projectName, serviceName, envText),
     onSuccess: async (count) => {
       await queryClient.invalidateQueries({
-        queryKey: buildKey(projectName, serviceName),
+        queryKey: ["environment", projectName, serviceName],
       })
       toast.success(
         `Successfully imported ${count} environment variable${count !== 1 ? "s" : ""}.`
