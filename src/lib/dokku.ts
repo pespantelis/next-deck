@@ -68,6 +68,10 @@ export const dokku = {
     active: (app: string) => read(`letsencrypt:active ${app}`),
     enable: (app: string) => write(`letsencrypt:enable ${app}`),
   },
+  ports: {
+    report: (app: string) => read(`ports:report ${app}`),
+    set: (app: string, ports: string) => write(`ports:set ${app} ${ports}`),
+  },
   postgres: {
     create: (name: string, network: string) =>
       write(`postgres:create ${name} -P ${network}`),

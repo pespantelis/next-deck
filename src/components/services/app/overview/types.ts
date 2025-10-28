@@ -1,6 +1,6 @@
 export interface Data {
-  alias: string
-  port: string
+  ports: string
+  internalEndpoint: string
   isPublic: boolean
   running: boolean
   deployed: boolean

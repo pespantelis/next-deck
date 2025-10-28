@@ -6,7 +6,7 @@ import { toast } from "sonner"
 import {
   getOverview,
   toggleServiceVisibility,
-  updateServicePort,
+  updateServicePorts,
 } from "./actions"
 import type { Data } from "./types"
 
@@ -37,7 +37,7 @@ export function useToggleVisibility(projectName: string, serviceName: string) {
   })
 }
 
-export function useUpdatePort(
+export function useUpdatePorts(
   projectName: string,
   serviceName: string,
   onSuccess: () => void
@@ -45,14 +45,14 @@ export function useUpdatePort(
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ port }: { port: string }) =>
-      updateServicePort(projectName, serviceName, port),
+    mutationFn: ({ ports }: { ports: string }) =>
+      updateServicePorts(projectName, serviceName, ports),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ["overview", projectName, serviceName],
       })
       onSuccess()
-      toast.success("Port updated successfully.")
+      toast.success("Ports updated successfully.")
     },
   })
 }

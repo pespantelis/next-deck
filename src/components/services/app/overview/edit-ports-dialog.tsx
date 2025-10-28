@@ -16,30 +16,33 @@ import {
 } from "@/components/ui/dialog"
 import { FieldGroup } from "@/components/ui/field"
 
-import { useUpdatePort } from "./hooks"
+import { useUpdatePorts } from "./hooks"
 
 const formSchema = z.object({
-  port: z
+  ports: z
     .string()
-    .min(1, "Port is required")
-    .regex(/^\d+$/, "Port must be a number"),
+    .min(1, "Required")
+    .regex(
+      /^(\d+|[a-z]+:\d+:\d+)(\s+(\d+|[a-z]+:\d+:\d+))*$/,
+      "Should be <port> or <scheme>:<port>:<container-port>"
+    ),
 })
 
 type FormData = z.infer<typeof formSchema>
 
-type PortData = {
-  port: string
+type PortsData = {
+  ports: string
 }
 
-export function useEditPortDialog(projectName: string, serviceName: string) {
+export function useEditPortsDialog(projectName: string, serviceName: string) {
   const { open } = useDialog()
 
-  return (portData: PortData) => {
+  return (portsData: PortsData) => {
     open(
       <Content
         projectName={projectName}
         serviceName={serviceName}
-        portData={portData}
+        portsData={portsData}
       />
     )
   }
@@ -48,35 +51,35 @@ export function useEditPortDialog(projectName: string, serviceName: string) {
 interface ContentProps {
   projectName: string
   serviceName: string
-  portData: PortData
+  portsData: PortsData
 }
 
-function Content({ projectName, serviceName, portData }: ContentProps) {
+function Content({ projectName, serviceName, portsData }: ContentProps) {
   const { close } = useDialog()
 
-  const { mutate, isPending } = useUpdatePort(projectName, serviceName, close)
+  const { mutate, isPending } = useUpdatePorts(projectName, serviceName, close)
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     mode: "onSubmit",
-    defaultValues: portData,
+    defaultValues: portsData,
   })
 
   return (
     <DialogContent className="sm:max-w-md">
       <DialogHeader>
-        <DialogTitle>Edit container port</DialogTitle>
+        <DialogTitle>Edit container ports</DialogTitle>
         <DialogDescription>
-          Update the port for the <strong>{serviceName}</strong> service.
+          Update the ports for the <strong>{serviceName}</strong> service.
         </DialogDescription>
       </DialogHeader>
       <form onSubmit={form.handleSubmit((data) => mutate(data))}>
         <FieldGroup>
           <InputFieldControl
             control={form.control}
-            name="port"
-            label="Port"
-            placeholder="3000"
+            name="ports"
+            label="Ports"
+            placeholder="https:443:5000"
             autoComplete="off"
             autoFocus
           />
@@ -84,7 +87,7 @@ function Content({ projectName, serviceName, portData }: ContentProps) {
 
         <DialogFooter className="mt-6">
           <DialogCancelButton isLoading={isPending}>Cancel</DialogCancelButton>
-          <SubmitButton isLoading={isPending}>Update port</SubmitButton>
+          <SubmitButton isLoading={isPending}>Update ports</SubmitButton>
         </DialogFooter>
       </form>
     </DialogContent>

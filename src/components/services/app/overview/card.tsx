@@ -24,7 +24,7 @@ import { OverviewStatus } from "@/components/overview-status"
 import { ItemDescription, ItemMedia, ItemTitle } from "@/components/ui/item"
 import { Switch } from "@/components/ui/switch"
 
-import { useEditPortDialog } from "./edit-port-dialog"
+import { useEditPortsDialog } from "./edit-ports-dialog"
 import { useOverview, useToggleVisibility } from "./hooks"
 import type { Data } from "./types"
 
@@ -41,13 +41,11 @@ export function OverviewCard({
 }: OverviewCardProps) {
   const { data } = useOverview(projectName, serviceName, initialData)
   const toggleVisibility = useToggleVisibility(projectName, serviceName)
-  const editPortDialog = useEditPortDialog(projectName, serviceName)
-
-  const internalEndpoint = `http://${data.alias}:${data.port}`
+  const editPortsDialog = useEditPortsDialog(projectName, serviceName)
 
   const copyInternalEndpoint = async () => {
     try {
-      await navigator.clipboard.writeText(internalEndpoint)
+      await navigator.clipboard.writeText(data.internalEndpoint)
       toast.success("Endpoint copied to clipboard")
     } catch {
       toast.error("Failed to copy endpoint")
@@ -74,12 +72,12 @@ export function OverviewCard({
             <ServerIcon />
           </ItemMedia>
           <ListCardItemContent>
-            <ItemTitle>Container port</ItemTitle>
-            <ItemDescription>{data.port || "-"}</ItemDescription>
+            <ItemTitle>Container ports</ItemTitle>
+            <ItemDescription>{data.ports}</ItemDescription>
           </ListCardItemContent>
           <ListCardItemActions>
             <ListCardItemAction
-              onClick={() => editPortDialog({ port: data.port })}
+              onClick={() => editPortsDialog({ ports: data.ports })}
             >
               <PencilIcon />
             </ListCardItemAction>
@@ -92,7 +90,7 @@ export function OverviewCard({
           </ItemMedia>
           <ListCardItemContent>
             <ItemTitle>Internal endpoint</ItemTitle>
-            <ItemDescription>{internalEndpoint}</ItemDescription>
+            <ItemDescription>{data.internalEndpoint}</ItemDescription>
           </ListCardItemContent>
           <ListCardItemActions>
             <ListCardItemAction onClick={copyInternalEndpoint}>
