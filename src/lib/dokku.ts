@@ -135,7 +135,10 @@ export const dokku = {
     stop: (app: string) => write(`ps:stop ${app}`),
   },
   storage: {
+    ensure: (path: string) => write(`storage:ensure-directory ${path}`),
     list: (app: string) => read(`storage:list ${app}`),
+    mount: (app: string, hostPath: string, containerPath: string) =>
+      write(`storage:mount ${app} ${hostPath}:${containerPath}`),
     unmount: (app: string, path: string) =>
       write(`storage:unmount ${app} ${path}`),
   },

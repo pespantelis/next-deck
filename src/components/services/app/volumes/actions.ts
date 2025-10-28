@@ -35,3 +35,16 @@ export async function unmountVolume(
   const appName = `${projectName}-${serviceName}`
   return dokku.storage.unmount(appName, path)
 }
+
+export async function mountVolume(
+  projectName: string,
+  serviceName: string,
+  hostPath: string,
+  containerPath: string
+): Promise<void> {
+  const appName = `${projectName}-${serviceName}`
+  const fullHostPath = `/var/lib/dokku/data/storage/${hostPath}`
+
+  await dokku.storage.ensure(hostPath)
+  return dokku.storage.mount(appName, fullHostPath, containerPath)
+}

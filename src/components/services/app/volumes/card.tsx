@@ -16,6 +16,7 @@ import {
 } from "@/components/list-card"
 import { ItemTitle } from "@/components/ui/item"
 
+import { useAddVolumeDialog } from "./add-volume-dialog"
 import { useVolumes } from "./hooks"
 import type { Data } from "./types"
 import { useUnmountVolumeAlertDialog } from "./unmount-volume-dialog"
@@ -32,6 +33,7 @@ export function VolumesCard({
   initialData,
 }: VolumesCardProps) {
   const { data } = useVolumes(projectName, serviceName, initialData)
+  const openAddVolumeDialog = useAddVolumeDialog(projectName, serviceName)
   const openUnmountDialog = useUnmountVolumeAlertDialog(
     projectName,
     serviceName
@@ -43,7 +45,7 @@ export function VolumesCard({
     <ListCard>
       <ListCardHeader>
         <ListCardTitle>Volumes</ListCardTitle>
-        <ListCardHeaderAction onClick={() => {}}>
+        <ListCardHeaderAction onClick={openAddVolumeDialog}>
           <PlusIcon /> Add volume
         </ListCardHeaderAction>
       </ListCardHeader>
