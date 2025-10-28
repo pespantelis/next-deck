@@ -15,9 +15,7 @@ export async function createAppService(
   const networkName = `${projectName}-network`
 
   return dokku.apps.create(appName).then(async () => {
-    return dokku.network.set(appName, networkName).then(async () => {
-      return dokku.proxy.disable(appName)
-    })
+    return dokku.network.set(appName, networkName)
   })
 }
 
