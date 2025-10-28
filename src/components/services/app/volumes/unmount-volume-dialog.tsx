@@ -70,7 +70,7 @@ function Content({
         <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
         <AlertDialogActionButton
           isLoading={isPending}
-          onClick={() => mutate(hostPath)}
+          onClick={() => mutate({ hostPath, containerPath })}
         >
           Unmount
         </AlertDialogActionButton>

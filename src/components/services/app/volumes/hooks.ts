@@ -24,8 +24,13 @@ export function useUnmountVolume(
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (hostPath: string) =>
-      unmountVolume(projectName, serviceName, hostPath),
+    mutationFn: ({
+      hostPath,
+      containerPath,
+    }: {
+      hostPath: string
+      containerPath: string
+    }) => unmountVolume(projectName, serviceName, hostPath, containerPath),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ["volumes", projectName, serviceName],

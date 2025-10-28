@@ -44,7 +44,7 @@ export const dokku = {
     create: (name: string) => write(`network:create ${name}`),
     list: () => read("network:list"),
     set: (app: string, network: string) =>
-      write(`network:set ${app} attach-post-create ${network}`),
+      write(`network:set ${app} attach-post-deploy ${network}`),
   },
   config: {
     export: (app: string) => read(`config:export ${app} --format envfile`),
@@ -139,7 +139,7 @@ export const dokku = {
     list: (app: string) => read(`storage:list ${app}`),
     mount: (app: string, hostPath: string, containerPath: string) =>
       write(`storage:mount ${app} ${hostPath}:${containerPath}`),
-    unmount: (app: string, path: string) =>
-      write(`storage:unmount ${app} ${path}`),
+    unmount: (app: string, hostPath: string, containerPath: string) =>
+      write(`storage:unmount ${app} ${hostPath}:${containerPath}`),
   },
 }
