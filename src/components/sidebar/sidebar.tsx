@@ -1,5 +1,6 @@
 "use client"
 
+import Image from "next/image"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { PlusIcon } from "lucide-react"
@@ -25,6 +26,7 @@ import type { Project } from "@/types"
 
 import { StatusIcon } from "../status"
 import { Button } from "../ui/button"
+import { Empty, EmptyHeader, EmptyMedia } from "../ui/empty"
 import { useCreateProjectDialog } from "./create-project-dialog"
 import {
   useCreateAppServiceDialog,
@@ -119,6 +121,23 @@ function DeckSidebarGroup({ project }: { project: Project }) {
             )
           })}
         </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
+  )
+}
+
+export function DeckSidebarEmpty({ children }: { children: React.ReactNode }) {
+  return (
+    <SidebarGroup>
+      <SidebarGroupContent>
+        <Empty className="p-0 px-2 py-6 md:p-0 md:px-4 md:py-12">
+          <EmptyHeader>
+            <EmptyMedia>
+              <Image src="/dokku.svg" alt="Dokku" width={89} height={62} />
+            </EmptyMedia>
+            {children}
+          </EmptyHeader>
+        </Empty>
       </SidebarGroupContent>
     </SidebarGroup>
   )

@@ -16,8 +16,11 @@ function execAsync(
   })
 }
 
-async function read(command: string) {
-  const { stdout } = await execAsync(command)
+async function read(command: string, suppress = true) {
+  const { stdout, error } = await execAsync(command)
+  if (error && !suppress) {
+    throw error
+  }
   return stdout.trim()
 }
 
@@ -146,4 +149,5 @@ export const dokku = {
     unmount: (app: string, hostPath: string, containerPath: string) =>
       write(`storage:unmount ${app} ${hostPath}:${containerPath}`),
   },
+  version: () => read("version", false),
 }

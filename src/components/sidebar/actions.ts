@@ -3,6 +3,15 @@
 import { dokku } from "@/lib/dokku"
 import type { Project, Service } from "@/types"
 
+export async function checkDokkuExists(): Promise<boolean> {
+  try {
+    await dokku.version()
+    return true
+  } catch {
+    return false
+  }
+}
+
 export async function createProject(name: string): Promise<void> {
   return dokku.network.create(name + "-network")
 }
