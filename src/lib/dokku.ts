@@ -90,7 +90,7 @@ export const dokku = {
         read(`postgres:info ${name} --exposed-ports`),
     },
     link: (service: string, app: string) =>
-      write(`postgres:link ${service} ${app}`),
+      write(`postgres:link ${service} ${app} --no-restart`),
     linked: (service: string, app: string) =>
       read(`postgres:linked ${service} ${app}`),
     links: (service: string) => read(`postgres:links ${service}`),

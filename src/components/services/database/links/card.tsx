@@ -7,17 +7,16 @@ import {
   ListCardEmpty,
   ListCardHeader,
   ListCardItem,
-  ListCardItemAction,
   ListCardItemActions,
   ListCardItemContent,
   ListCardItems,
   ListCardTitle,
 } from "@/components/list-card"
 import { ItemMedia, ItemTitle } from "@/components/ui/item"
-import { Spinner } from "@/components/ui/spinner"
 import type { DatabaseType } from "@/types"
 
-import { useDatabaseLinks, useToggleDatabaseLink } from "./hooks"
+import { useDatabaseLinks } from "./hooks"
+import { ToggleLinkAction } from "./toggle-link-action"
 import type { Data } from "./types"
 
 interface LinksCardProps {
@@ -39,11 +38,6 @@ export function LinksCard({
     dbType,
     initialData,
   })
-  const toggleLinkMutation = useToggleDatabaseLink(
-    projectName,
-    serviceName,
-    dbType
-  )
 
   return (
     <ListCard>
@@ -70,14 +64,12 @@ export function LinksCard({
                 </ItemTitle>
               </ListCardItemContent>
               <ListCardItemActions>
-                <ListCardItemAction
-                  size="default"
-                  onClick={() => toggleLinkMutation.mutate(link.name)}
-                  disabled={toggleLinkMutation.isPending}
-                >
-                  {toggleLinkMutation.isPending && <Spinner />}
-                  {link.isLinked ? "Unlink" : "Link"}
-                </ListCardItemAction>
+                <ToggleLinkAction
+                  projectName={projectName}
+                  serviceName={serviceName}
+                  dbType={dbType}
+                  link={link}
+                />
               </ListCardItemActions>
             </ListCardItem>
           ))}
