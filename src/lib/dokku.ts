@@ -47,7 +47,7 @@ export const dokku = {
     create: (name: string) => write(`network:create ${name}`),
     list: () => read("network:list"),
     set: (app: string, network: string) =>
-      write(`network:set ${app} attach-post-deploy ${network}`),
+      write(`network:set ${app} attach-post-create ${network}`),
   },
   config: {
     export: (app: string) => read(`config:export ${app} --format envfile`),
