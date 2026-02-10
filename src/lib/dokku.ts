@@ -61,6 +61,16 @@ export const dokku = {
     unset: (app: string, key: string) =>
       write(`config:unset --no-restart ${app} ${key}`),
   },
+  dockerOptions: {
+    build: {
+      add: (app: string, option: string) =>
+        write(`docker-options:add ${app} build "${option}"`),
+      remove: (app: string, option: string) =>
+        write(`docker-options:remove ${app} build "${option}"`),
+      report: (app: string) =>
+        read(`docker-options:report ${app} --docker-options-build`),
+    },
+  },
   domains: {
     add: (app: string, domain: string) => write(`domains:add ${app} ${domain}`),
     report: (app: string) => read(`domains:report ${app} --domains-app-vhosts`),

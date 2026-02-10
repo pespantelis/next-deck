@@ -3,6 +3,7 @@ import { Suspense } from "react"
 import { ListCardSkeleton } from "@/components/list-card"
 import type { ServiceIdentifier } from "@/types"
 
+import BuildOptions from "./build-options"
 import Domains from "./domains"
 import Environment from "./environment"
 import Overview from "./overview"
@@ -17,6 +18,9 @@ export default function AppServices({
       <div className="flex flex-col gap-4">
         <Suspense fallback={<ListCardSkeleton count={4} className="h-17.5" />}>
           <Overview projectName={projectName} serviceName={serviceName} />
+        </Suspense>
+        <Suspense fallback={<ListCardSkeleton count={1} className="h-17.5" />}>
+          <BuildOptions projectName={projectName} serviceName={serviceName} />
         </Suspense>
         <Suspense fallback={<ListCardSkeleton count={1} showAction />}>
           <Volumes projectName={projectName} serviceName={serviceName} />
